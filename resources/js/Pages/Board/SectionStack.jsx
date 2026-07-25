@@ -41,7 +41,7 @@ export default function SectionStack({
     <div
       data-testid={`section-${sectionKey}`}
       className={cn(
-        "relative flex min-h-[10rem] flex-col overflow-hidden rounded-lg border transition-shadow",
+        "relative flex min-h-[10rem] flex-col overflow-hidden rounded-lg border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
         className,
         isFreeform && "min-h-[16rem]",
         // A brief pulse when a broadcast touches this section — see

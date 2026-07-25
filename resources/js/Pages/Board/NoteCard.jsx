@@ -27,8 +27,8 @@ export default function NoteCard({ note, number, readOnly = false }) {
       {...(readOnly ? {} : attributes)}
       data-testid="note-card"
       className={cn(
-        "flex touch-none items-start gap-2 rounded-md p-2 text-xs shadow-sm",
-        !readOnly && "cursor-grab active:cursor-grabbing",
+        "flex touch-none items-start gap-2 rounded-md p-2 text-xs shadow-sm transition-all duration-150",
+        !readOnly && "cursor-grab hover:-translate-y-0.5 hover:shadow-md active:cursor-grabbing",
         isDragging && "opacity-30",
       )}
       style={{ ...style, backgroundColor: note.color, color: "#fff" }}
