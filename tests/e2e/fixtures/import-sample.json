@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "board_uuid": "fixture-uuid",
+  "is_locked": true,
+  "exported_at": "2026-01-01T00:00:00Z",
+  "notes": [
+    {
+      "section": "key_partners",
+      "body": "Imported fixture note",
+      "color": "#2a78d6",
+      "author_name": "Fixture Author",
+      "pos_x": 40,
+      "pos_y": 40
+    }
+  ]
+}

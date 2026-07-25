@@ -1,0 +1,31 @@
+{
+  "businessName": "Example: a subscription coffee delivery service",
+  "notes": [
+    { "id": "ex-1", "section": "key_partners", "body": "Local coffee roasters", "color": "#4a3aa7", "author_name": "Example", "pos_x": 30, "pos_y": 30 },
+    { "id": "ex-2", "section": "key_partners", "body": "Courier/delivery network", "color": "#4a3aa7", "author_name": "Example", "pos_x": 65, "pos_y": 60 },
+
+    { "id": "ex-3", "section": "key_activities", "body": "Roasting & packaging", "color": "#2a78d6", "author_name": "Example", "pos_x": 35, "pos_y": 35 },
+    { "id": "ex-4", "section": "key_activities", "body": "Subscription logistics", "color": "#2a78d6", "author_name": "Example", "pos_x": 60, "pos_y": 65 },
+
+    { "id": "ex-5", "section": "key_resources", "body": "Roasting equipment", "color": "#1baf7a", "author_name": "Example", "pos_x": 30, "pos_y": 40 },
+    { "id": "ex-6", "section": "key_resources", "body": "Subscriber database", "color": "#1baf7a", "author_name": "Example", "pos_x": 65, "pos_y": 55 },
+
+    { "id": "ex-7", "section": "value_propositions", "body": "Fresh beans delivered before you run out", "color": "#eb6834", "author_name": "Example", "pos_x": 50, "pos_y": 30 },
+    { "id": "ex-8", "section": "value_propositions", "body": "Discover new roasters every month", "color": "#eb6834", "author_name": "Example", "pos_x": 40, "pos_y": 65 },
+
+    { "id": "ex-9", "section": "customer_relationships", "body": "Personal roast recommendations", "color": "#e87ba4", "author_name": "Example", "pos_x": 40, "pos_y": 30 },
+    { "id": "ex-10", "section": "customer_relationships", "body": "Community tasting events", "color": "#e87ba4", "author_name": "Example", "pos_x": 60, "pos_y": 60 },
+
+    { "id": "ex-11", "section": "channels", "body": "Website & mobile app", "color": "#eda100", "author_name": "Example", "pos_x": 35, "pos_y": 35 },
+    { "id": "ex-12", "section": "channels", "body": "Instagram & word of mouth", "color": "#eda100", "author_name": "Example", "pos_x": 65, "pos_y": 60 },
+
+    { "id": "ex-13", "section": "customer_segments", "body": "Home coffee enthusiasts", "color": "#008300", "author_name": "Example", "pos_x": 35, "pos_y": 35 },
+    { "id": "ex-14", "section": "customer_segments", "body": "Small offices", "color": "#008300", "author_name": "Example", "pos_x": 65, "pos_y": 60 },
+
+    { "id": "ex-15", "section": "revenue_streams", "body": "Monthly subscription fee", "color": "#e34948", "author_name": "Example", "pos_x": 35, "pos_y": 40 },
+    { "id": "ex-16", "section": "revenue_streams", "body": "One-off gift boxes", "color": "#e34948", "author_name": "Example", "pos_x": 65, "pos_y": 55 },
+
+    { "id": "ex-17", "section": "cost_structure", "body": "Green bean sourcing", "color": "#6b6a65", "author_name": "Example", "pos_x": 35, "pos_y": 40 },
+    { "id": "ex-18", "section": "cost_structure", "body": "Shipping & packaging", "color": "#6b6a65", "author_name": "Example", "pos_x": 65, "pos_y": 55 }
+  ]
+}

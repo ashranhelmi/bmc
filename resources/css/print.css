@@ -1,0 +1,8 @@
+/* Tailwind has no utility for page setup itself — this is the one bit of
+   print CSS that has to be hand-written. Visibility toggling (hiding the
+   free-form area, cursor layer, host controls, tooltips) is handled with
+   Tailwind's built-in `print:` variant directly in each component instead. */
+@page {
+    size: A4 landscape;
+    margin: 12mm;
+}
