@@ -8,6 +8,7 @@ use App\Events\BoardStarted;
 use App\Models\Board;
 use App\Models\Note;
 use App\Models\Participant;
+use App\Support\LanAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -28,8 +29,9 @@ class BoardController extends Controller
                 'isStarted' => $board->is_started,
                 'isLocked' => $board->is_locked,
                 'schemaVersion' => $board->schema_version,
-                // Only ever sent to the host — never leaked to other viewers.
+                // Both only ever sent to the host — never leaked to other viewers.
                 'pin' => $isHost ? $board->pin : null,
+                'lanUrl' => $isHost ? $this->lanUrl($request) : null,
             ],
             'isHost' => $isHost,
             'pinVerified' => $request->session()->get('pin_verified_board_id') === $board->id
@@ -53,6 +55,24 @@ class BoardController extends Controller
                 'id', 'section', 'body', 'color', 'author_name', 'pos_x', 'pos_y',
             ]) : [],
         ]);
+    }
+
+    /**
+     * The URL participants should actually use — derived from the server's
+     * own detected LAN IP plus this request's real scheme/port, not from
+     * however the host happened to address this particular request. Falls
+     * back to null (letting the frontend fall back to window.location) if
+     * detection fails.
+     */
+    private function lanUrl(Request $request): ?string
+    {
+        $ip = LanAddress::detect();
+
+        if (! $ip) {
+            return null;
+        }
+
+        return sprintf('%s://%s:%s', $request->getScheme(), $ip, $request->getPort());
     }
 
     public function start(Request $request)

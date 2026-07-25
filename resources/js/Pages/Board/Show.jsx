@@ -140,7 +140,11 @@ export default function Show({
     return (
       <>
         <Head title="Share — BMC" />
-        <ShareSessionScreen pin={board.pin} onContinue={() => setShowShareScreen(false)} />
+        <ShareSessionScreen
+          pin={board.pin}
+          lanUrl={board.lanUrl}
+          onContinue={() => setShowShareScreen(false)}
+        />
       </>
     )
   }

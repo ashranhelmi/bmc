@@ -4,11 +4,14 @@ import QRCode from "qrcode"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
-export default function ShareSessionScreen({ pin, onContinue }) {
+export default function ShareSessionScreen({ pin, lanUrl, onContinue }) {
   const canvasRef = React.useRef(null)
   const { post, processing } = useForm()
-  const isLocalhost = ["localhost", "127.0.0.1"].includes(window.location.hostname)
-  const shareUrl = window.location.origin
+  // Server-detected LAN IP is preferred — correct regardless of how the host
+  // themselves opened this page (even plain localhost). Only falls back to
+  // window.location when detection genuinely failed (see LanAddress::detect).
+  const shareUrl = lanUrl ?? window.location.origin
+  const detectionFailed = !lanUrl
 
   React.useEffect(() => {
     if (canvasRef.current) {
@@ -25,12 +28,12 @@ export default function ShareSessionScreen({ pin, onContinue }) {
         </p>
       </div>
 
-      {isLocalhost && (
+      {detectionFailed && (
         <Card className="max-w-md border-destructive/50 bg-destructive/5">
           <CardContent className="pt-4 text-sm text-destructive">
-            This page loaded at <code>localhost</code> — other devices can't reach that address.
-            Reopen this page using your laptop's LAN IP (e.g. <code>http://192.168.x.x:8000</code>)
-            before sharing.
+            Couldn't detect this laptop's LAN IP automatically. Make sure you opened this page using
+            your laptop's LAN IP (e.g. <code>http://192.168.x.x:8000</code>), not{" "}
+            <code>localhost</code>, before sharing — other devices can't reach that address.
           </CardContent>
         </Card>
       )}
