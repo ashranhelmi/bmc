@@ -106,7 +106,7 @@ export default function SectionStack({
           </SortableContext>
           {!readOnly && (
             <div className="print:hidden">
-              <AddNoteButton sectionKey={sectionKey} />
+              <AddNoteButton sectionKey={sectionKey} color={isFreeform ? "#6b6a65" : section.color} />
             </div>
           )}
         </div>
@@ -115,7 +115,7 @@ export default function SectionStack({
   )
 }
 
-function AddNoteButton({ sectionKey }) {
+function AddNoteButton({ sectionKey, color }) {
   const [open, setOpen] = React.useState(false)
   const { data, setData, post, processing, reset, transform } = useForm({ body: "" })
 
@@ -137,9 +137,11 @@ function AddNoteButton({ sectionKey }) {
       <Button
         type="button"
         size="sm"
-        variant="secondary"
+        variant="outline"
         onClick={() => setOpen(true)}
         data-testid={`add-note-${sectionKey}`}
+        className="self-start"
+        style={{ color, borderColor: `${color}55` }}
       >
         <PlusIcon /> Add note
       </Button>
@@ -147,14 +149,25 @@ function AddNoteButton({ sectionKey }) {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-1.5 rounded-md border bg-card p-2 shadow-sm">
+    <form
+      onSubmit={submit}
+      // Capped width + left-aligned (`self-start` opts out of the parent
+      // flex-col's default stretch) so this doesn't balloon to the full
+      // section width in the wide free-form area — a normal BMC section is
+      // already narrower than the cap, so it's a no-op there.
+      className="flex w-full max-w-64 flex-col gap-1.5 self-start rounded-md border p-2 shadow-sm"
+      style={{ backgroundColor: `${color}0d`, borderColor: `${color}40` }}
+    >
       <textarea
         autoFocus
         maxLength={500}
         value={data.body}
         onChange={(e) => setData("body", e.target.value)}
         placeholder="Type a note…"
-        className="h-16 resize-none rounded border bg-background p-1.5 text-xs outline-none"
+        className="h-16 resize-none rounded-md border bg-background p-1.5 text-xs outline-none focus:ring-2 focus:ring-offset-0"
+        style={{ borderColor: `${color}66`, boxShadow: "none" }}
+        onFocus={(e) => (e.target.style.boxShadow = `0 0 0 2px ${color}40`)}
+        onBlur={(e) => (e.target.style.boxShadow = "none")}
         data-testid="add-note-textarea"
       />
       <div className="flex justify-end gap-1.5">
@@ -166,6 +179,8 @@ function AddNoteButton({ sectionKey }) {
           size="sm"
           disabled={processing || !data.body.trim()}
           data-testid="add-note-submit"
+          className="text-white hover:brightness-90"
+          style={{ backgroundColor: color }}
         >
           Add
         </Button>
