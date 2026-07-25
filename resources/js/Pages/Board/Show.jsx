@@ -11,7 +11,8 @@ import HostControls from "./HostControls"
 import ExportButton from "./ExportButton"
 import PrintButton from "./PrintButton"
 import ParticipantRoster from "./ParticipantRoster"
-import GuideDialog from "./GuideDialog"
+import HowItWorksDialog from "./HowItWorksDialog"
+import BmcGuideDialog from "./BmcGuideDialog"
 import { Button } from "@/components/ui/button"
 import exampleData from "@/data/exampleCanvas.json"
 import { BookOpenIcon, XIcon } from "lucide-react"
@@ -219,7 +220,8 @@ export default function Show({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <GuideDialog sections={sections} />
+            <HowItWorksDialog />
+            <BmcGuideDialog sections={sections} />
             {!viewingExample && (
               <Button variant="outline" size="sm" onClick={() => setViewingExample(true)}>
                 <BookOpenIcon /> See an example
