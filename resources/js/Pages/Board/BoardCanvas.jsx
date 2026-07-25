@@ -4,19 +4,27 @@ import { arrayMove } from "@dnd-kit/sortable"
 import { router } from "@inertiajs/react"
 import SectionStack from "./SectionStack"
 import { cn } from "@/lib/utils"
+import { ZONE_TINT, ZONE_LABEL_TINT } from "@/lib/bmcZones"
 
 // Groups sections by their role in the framework — supply side, the Value
 // Proposition bridge, demand side, and the financial check underneath —
 // reinforcing the same "does this actually connect" reading covered in the
-// BMC guide, directly on the canvas. Deliberately NOT new chromatic hues:
-// each section keeps its own already CVD-validated color for individual
-// identity (config/bmc.php); zone grouping uses only the app's existing
-// neutral surface tokens, so it doesn't need fresh color validation and
-// can't visually compete with a section's own accent.
-function Zone({ label, tint, className, children }) {
+// BMC guide, directly on the canvas. No bordered/padded wrapper "card" —
+// that only ate into the width available to the actual sections — just a
+// label plus a flat background wash directly behind the content.
+//
+// This IS a real color per zone (not just a neutral tint), reusing Tailwind's
+// own stock scale rather than the bespoke validated 9-section palette
+// (config/bmc.php) — a deliberately lower bar than that palette's, since
+// zone color here is a SECONDARY, redundant signal (position + label text +
+// each section's own already-validated color still carry primary identity),
+// not the sole way anything is distinguished. Colors shared with
+// BmcGuideDialog's diagram via lib/bmcZones so the two stay consistent.
+
+function Zone({ label, zone, className, children }) {
   return (
-    <div className={cn("flex flex-col gap-2 rounded-xl border p-3", tint, className)}>
-      <div className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+    <div className={cn("flex flex-col gap-2 rounded-lg p-2", ZONE_TINT[zone], className)}>
+      <div className={cn("px-1 text-xs font-semibold tracking-wide uppercase", ZONE_LABEL_TINT[zone])}>
         {label}
       </div>
       {children}
@@ -173,8 +181,10 @@ export default function BoardCanvas({
       onDragEnd={handleDragEnd}
     >
       <div ref={containerRef} className="relative flex flex-1 flex-col gap-3 overflow-auto p-4">
-        <div className="grid flex-1 grid-cols-1 items-stretch gap-3 lg:grid-cols-[1fr_1fr_1.6fr]">
-          <Zone label="Supply-side" tint="bg-muted/20">
+        {/* 2:1:2 — matches the original 5-column canvas (2 cols supply, 1
+            col value, 2 cols demand), not an arbitrary ratio. */}
+        <div className="grid flex-1 grid-cols-1 items-stretch gap-3 lg:grid-cols-[2fr_1fr_2fr]">
+          <Zone label="Supply-side" zone="supply">
             <div className="grid h-full grid-cols-2 gap-3">
               {stack("key_partners", "h-full")}
               <div className="flex flex-col gap-3">
@@ -184,9 +194,9 @@ export default function BoardCanvas({
             </div>
           </Zone>
 
-          <Zone label="Value">{stack("value_propositions", "h-full")}</Zone>
+          <Zone label="Value" zone="value">{stack("value_propositions", "h-full")}</Zone>
 
-          <Zone label="Demand-side" tint="bg-accent/20">
+          <Zone label="Demand-side" zone="demand">
             <div className="grid h-full grid-cols-2 gap-3">
               <div className="flex flex-col gap-3">
                 {stack("customer_relationships")}
@@ -200,7 +210,7 @@ export default function BoardCanvas({
         {/* Cost Structure / Revenue Streams — a separate full-width 50/50
             band, matching the real canvas rather than continuing the top
             grid's column boundaries. */}
-        <Zone label="Financial check" tint="bg-muted/40">
+        <Zone label="Financial check" zone="financial">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {stack("cost_structure")}
             {stack("revenue_streams")}

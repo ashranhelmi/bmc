@@ -7,6 +7,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+import { ZONE_TINT, ABBR } from "@/lib/bmcZones"
 
 // Deeper "why this matters" context per section, beyond the one-line
 // guiding question already shown in the tap-to-reveal tooltips — this is
@@ -23,7 +26,34 @@ const DEEPER = {
   cost_structure: "Should be traceable back to specific Key Resources, Activities, or Partnerships above it. A cost with nothing above it to explain it is worth questioning.",
 }
 
-const FLOW_BOX = "rounded-md border px-3 py-2 text-center text-xs font-medium"
+// Each box in the diagram IS the explanation — click it to see what that
+// block means, instead of a separate written list underneath the diagram
+// that just meant scrolling down past it and back up again.
+function FlowBox({ sectionKey, section, className }) {
+  const zone = sectionKey === "value_propositions" ? "value"
+    : ["key_partners", "key_activities", "key_resources"].includes(sectionKey) ? "supply"
+    : ["cost_structure", "revenue_streams"].includes(sectionKey) ? "financial"
+    : "demand"
+
+  return (
+    <Popover>
+      <PopoverTrigger
+        className={cn(
+          "rounded-md px-2.5 py-1.5 text-center text-xs font-bold transition hover:brightness-95",
+          ZONE_TINT[zone],
+          className,
+        )}
+      >
+        {ABBR[sectionKey]}
+      </PopoverTrigger>
+      <PopoverContent className="w-72 text-sm">
+        <div className="mb-1 font-semibold">{section.label}</div>
+        <p className="text-muted-foreground">{section.question}</p>
+        {DEEPER[sectionKey] && <p className="mt-2 text-muted-foreground">{DEEPER[sectionKey]}</p>}
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 export default function BmcGuideDialog({ sections }) {
   return (
@@ -33,66 +63,61 @@ export default function BmcGuideDialog({ sections }) {
           <LayoutGridIcon /> Business Model Canvas
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[85vh] max-w-5xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>The Business Model Canvas</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-6 text-sm">
+        <div className="flex flex-col gap-4 text-sm">
           <p className="text-muted-foreground">
             The canvas breaks a business into 9 connected blocks, not 9 independent lists. The
             real value of filling it out isn't the individual answers — it's checking whether they
             actually connect: does every Value Proposition have a Customer Segment that wants it, a
-            Channel that reaches them, and a Cost that's covered by real Revenue? An idea that
-            doesn't connect to anything else on the canvas is usually one worth questioning, not
-            filling in for its own sake.
+            Channel that reaches them, and a Cost that's covered by real Revenue? Click any block
+            below to see what it's for.
           </p>
 
-          <div>
-            <h3 className="mb-3 font-semibold">How the blocks relate</h3>
-            <div className="flex flex-col items-center gap-2 rounded-lg border bg-muted/30 p-4">
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <div className="flex flex-col gap-1">
-                  <div className={FLOW_BOX}>Key Partners</div>
-                  <div className={FLOW_BOX}>Key Activities</div>
-                  <div className={FLOW_BOX}>Key Resources</div>
-                </div>
-                <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
-                <div className={`${FLOW_BOX} bg-background`}>Value Proposition</div>
-                <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
-                <div className="flex flex-col gap-1">
-                  <div className={FLOW_BOX}>Customer Relationships</div>
-                  <div className={FLOW_BOX}>Channels</div>
-                </div>
-                <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
-                <div className={FLOW_BOX}>Customer Segments</div>
+          <div className="flex flex-col items-center gap-3 rounded-lg border bg-muted/30 p-4">
+            <div className="flex flex-nowrap items-center justify-center gap-2 overflow-x-auto">
+              <div className="flex flex-col gap-1">
+                <FlowBox sectionKey="key_partners" section={sections.key_partners} />
+                <FlowBox sectionKey="key_activities" section={sections.key_activities} />
+                <FlowBox sectionKey="key_resources" section={sections.key_resources} />
               </div>
-
-              <ArrowDownIcon className="size-4 text-muted-foreground" />
-
-              <div className="flex items-center gap-3">
-                <div className={FLOW_BOX}>Cost Structure</div>
-                <span className="text-xs text-muted-foreground">funds the left side, paid for by</span>
-                <div className={FLOW_BOX}>Revenue Streams</div>
+              <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
+              <FlowBox
+                sectionKey="value_propositions"
+                section={sections.value_propositions}
+                className="px-4 py-6"
+              />
+              <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
+              <div className="flex flex-col gap-1">
+                <FlowBox sectionKey="customer_relationships" section={sections.customer_relationships} />
+                <FlowBox sectionKey="channels" section={sections.channels} />
               </div>
-              <p className="max-w-md text-center text-xs text-muted-foreground">
-                If Cost Structure is bigger than Revenue Streams can realistically cover, the model
-                doesn't work yet — regardless of how good any individual block looks alone.
-              </p>
+              <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
+              <FlowBox sectionKey="customer_segments" section={sections.customer_segments} className="px-4 py-6" />
             </div>
-          </div>
 
-          <div>
-            <h3 className="mb-2 font-semibold">Each block</h3>
-            <dl className="flex flex-col gap-4">
+            <ArrowDownIcon className="size-4 text-muted-foreground" />
+
+            <div className="flex items-center gap-3">
+              <FlowBox sectionKey="cost_structure" section={sections.cost_structure} />
+              <span className="text-xs text-muted-foreground">funds the left side, paid for by</span>
+              <FlowBox sectionKey="revenue_streams" section={sections.revenue_streams} />
+            </div>
+            <p className="max-w-md text-center text-xs text-muted-foreground">
+              If Cost Structure is bigger than Revenue Streams can realistically cover, the model
+              doesn't work yet — regardless of how good any individual block looks alone.
+            </p>
+
+            <div className="mt-1 flex flex-wrap justify-center gap-x-4 gap-y-1 border-t pt-3 text-xs text-muted-foreground">
               {Object.entries(sections).map(([key, section]) => (
-                <div key={key}>
-                  <dt className="font-medium">{section.label}</dt>
-                  <dd className="text-muted-foreground">{section.question}</dd>
-                  {DEEPER[key] && <dd className="mt-1 text-muted-foreground">{DEEPER[key]}</dd>}
-                </div>
+                <span key={key}>
+                  <span className="font-semibold">{ABBR[key]}</span> = {section.label}
+                </span>
               ))}
-            </dl>
+            </div>
           </div>
         </div>
       </DialogContent>
