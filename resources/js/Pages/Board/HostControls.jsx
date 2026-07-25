@@ -2,6 +2,7 @@ import { useForm } from "@inertiajs/react"
 import { LockIcon, LockOpenIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ImportDialog from "./ImportDialog"
+import ResetBoardDialog from "./ResetBoardDialog"
 
 export default function HostControls({ isLocked }) {
   const { post, processing } = useForm()
@@ -19,6 +20,9 @@ export default function HostControls({ isLocked }) {
         {isLocked ? "Unlock" : "Lock"}
       </Button>
       <ImportDialog />
+      {/* Visually separated — the one irreversible action among these three. */}
+      <div className="mx-1 h-5 w-px bg-border" />
+      <ResetBoardDialog />
     </div>
   )
 }

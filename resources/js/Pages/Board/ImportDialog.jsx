@@ -2,9 +2,12 @@ import * as React from "react"
 import { useForm } from "@inertiajs/react"
 import { UploadIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -41,22 +44,27 @@ export default function ImportDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Import a previously exported board</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={submit} className="flex flex-col gap-3">
-          <p className="text-sm text-muted-foreground">
+          <DialogDescription>
             This replaces the current board's notes and lock state for everyone connected — exactly
             as they were at export time.
-          </p>
-          <input
-            type="file"
-            accept="application/json"
-            onChange={(e) => setData("file", e.target.files?.[0] ?? null)}
-            data-testid="import-file-input"
-          />
-          {errors.file && <p className="text-sm text-destructive">{errors.file}</p>}
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={submit} className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="import-file">Exported board (.json)</Label>
+            <Input
+              id="import-file"
+              type="file"
+              accept="application/json"
+              onChange={(e) => setData("file", e.target.files?.[0] ?? null)}
+              aria-invalid={!!errors.file}
+              data-testid="import-file-input"
+            />
+            {errors.file && <p className="text-sm text-destructive">{errors.file}</p>}
+          </div>
           <DialogFooter>
             <Button type="submit" disabled={processing || !data.file} data-testid="import-submit">
-              Import
+              <UploadIcon /> Import
             </Button>
           </DialogFooter>
         </form>

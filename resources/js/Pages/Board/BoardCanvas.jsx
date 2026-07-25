@@ -182,10 +182,21 @@ export default function BoardCanvas({
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div ref={containerRef} className="relative flex flex-1 flex-col gap-3 overflow-auto p-4">
+      {/* print:overflow-visible/h-auto/flex-none — overflow-auto clips print
+          to whatever was scrolled into view on screen at the moment Print
+          was clicked, rather than letting the real content paginate across
+          as many physical pages as it actually needs. */}
+      <div
+        ref={containerRef}
+        className="relative flex flex-1 flex-col gap-3 overflow-auto p-4 print:h-auto print:flex-none print:overflow-visible"
+      >
         {/* 2:1:2 — matches the original 5-column canvas (2 cols supply, 1
-            col value, 2 cols demand), not an arbitrary ratio. */}
-        <div className="grid flex-1 grid-cols-1 items-stretch gap-3 lg:grid-cols-[2fr_1fr_2fr]">
+            col value, 2 cols demand), not an arbitrary ratio. print:grid-cols
+            is set unconditionally (not left to the lg: breakpoint) because
+            browsers are inconsistent about what width they report for the
+            print media query — relying on it risked silently collapsing to
+            a single stacked column on paper instead of the real BMC layout. */}
+        <div className="grid flex-1 grid-cols-1 items-stretch gap-3 lg:grid-cols-[2fr_1fr_2fr] print:grid-cols-[2fr_1fr_2fr]">
           <Zone label="Supply-side" zone="supply">
             <div className="grid h-full grid-cols-2 gap-3">
               {stack("key_partners", "h-full")}
@@ -213,7 +224,7 @@ export default function BoardCanvas({
             band, matching the real canvas rather than continuing the top
             grid's column boundaries. */}
         <Zone label="Financial check" zone="financial">
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 print:grid-cols-2">
             {stack("cost_structure")}
             {stack("revenue_streams")}
           </div>

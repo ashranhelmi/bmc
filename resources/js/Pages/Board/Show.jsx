@@ -138,6 +138,7 @@ export default function Show({
       .listen(".board.lock-toggled", ({ isLocked: locked }) => setIsLocked(locked))
       .listen(".board.started", () => router.reload())
       .listen(".board.imported", () => router.reload())
+      .listen(".board.reset", () => router.reload())
 
     return () => {
       window.Echo.leave(`board.${board.id}`)
@@ -221,7 +222,10 @@ export default function Show({
   return (
     <>
       <Head title="BMC" />
-      <div className="flex h-screen flex-col" data-testid="board-page" data-presence-ready={presenceReady ? "true" : "false"}>
+      {/* print:h-auto — h-screen (100vh) is a screen-only concept; under
+          print it would clip content to a single viewport-height's worth
+          instead of letting the real content height paginate naturally. */}
+      <div className="flex h-screen flex-col print:h-auto" data-testid="board-page" data-presence-ready={presenceReady ? "true" : "false"}>
         <header className="flex flex-wrap items-center justify-between gap-3 border-b p-3 print:hidden">
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="font-semibold">Business Model Canvas</h1>

@@ -29,6 +29,19 @@ class Board extends Model
         'schema_version' => 'integer',
     ];
 
+    // Mirrors the migration's DB-level defaults — Eloquent does NOT read a
+    // column's SQL default back into a freshly-created model's in-memory
+    // attributes (only a real re-fetch would), so without this, the very
+    // first `Board::current()` after a reset (or the very first-ever boot)
+    // would hand back `is_started: null` rather than `false` to the
+    // frontend for that one request — harmless in JS truthiness checks, but
+    // not actually correct.
+    protected $attributes = [
+        'is_started' => false,
+        'is_locked' => false,
+        'schema_version' => 1,
+    ];
+
     public function uniqueIds(): array
     {
         return ['uuid'];

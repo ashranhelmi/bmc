@@ -49,6 +49,12 @@ export default function SectionStack({
         // Show.jsx's flashSection. Not an auto-expand: a collapsed section
         // stays collapsed, this only draws the eye to it.
         highlighted && "animate-pulse ring-2 ring-primary",
+        // print:min-h-0 — the screen min-height just wastes paper once a
+        // section actually has content. print:break-inside-avoid keeps a
+        // whole section together rather than letting a page break land
+        // mid-card. print:overflow-visible guards against the expanded
+        // note list ever being taller than this box expects.
+        "print:min-h-0 print:overflow-visible print:break-inside-avoid",
       )}
       style={{ backgroundColor: isFreeform ? undefined : `${section.color}1a` }}
     >

@@ -29,7 +29,7 @@ export default function NoteCard({ note, number, readOnly = false, onPicChange }
       {...(readOnly ? {} : attributes)}
       data-testid="note-card"
       className={cn(
-        "flex touch-none items-start gap-2 rounded-md p-2 text-xs shadow-sm transition-all duration-150",
+        "flex touch-none items-start gap-2 rounded-md p-2 text-xs shadow-sm transition-all duration-150 print:break-inside-avoid",
         !readOnly && "cursor-grab hover:-translate-y-0.5 hover:shadow-md active:cursor-grabbing",
         isDragging && "opacity-30",
       )}

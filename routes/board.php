@@ -17,6 +17,7 @@ Route::middleware('is.host')->group(function () {
     Route::post('/board/lock', [BoardController::class, 'lock'])->name('board.lock');
     Route::post('/board/unlock', [BoardController::class, 'unlock'])->name('board.unlock');
     Route::post('/board/import', [BoardController::class, 'import'])->name('board.import');
+    Route::post('/board/reset', [BoardController::class, 'reset'])->name('board.reset');
 });
 
 Route::middleware('pin.verified')->group(function () {

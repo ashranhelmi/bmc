@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\BoardImported;
 use App\Events\BoardLockToggled;
+use App\Events\BoardReset;
 use App\Events\BoardStarted;
 use App\Models\Board;
 use App\Models\Note;
@@ -120,6 +121,37 @@ class BoardController extends Controller
         broadcast(new BoardLockToggled($board))->toOthers();
 
         return back();
+    }
+
+    /**
+     * Wipes the board back to a genuinely blank slate for a new workshop —
+     * distinct from Lock (which just freezes content for review/print
+     * within the SAME session). Deletes the Board row outright rather than
+     * just clearing its fields: notes/participants cascade-delete with it
+     * (see their migrations), and the NEXT Board::current() call simply
+     * firstOrCreate()s a fresh row (new id, new uuid, all defaults) — no
+     * separate "clear children then reset fields" bookkeeping needed.
+     *
+     * Broadcasts on the OLD board's channel before deleting it, so every
+     * other connected client's next request naturally lands on the fresh
+     * board (new is_started=false) via the same reload-on-broadcast
+     * pattern already used for Start/Import — nothing reset-specific
+     * needed on their side beyond listening for the event.
+     */
+    public function reset(Request $request)
+    {
+        $board = Board::current();
+
+        broadcast(new BoardReset($board->id))->toOthers();
+        $board->delete();
+
+        // The person who reset it goes back through Start Session fresh too
+        // — the old host_board_id no longer refers to anything real.
+        $request->session()->forget([
+            'is_host', 'host_board_id', 'pin_verified_board_id', 'participant_id',
+        ]);
+
+        return redirect()->route('board.show');
     }
 
     public function export(Request $request)

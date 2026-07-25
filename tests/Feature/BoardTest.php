@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Board;
 use App\Models\Note;
+use App\Models\Participant;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -112,5 +113,59 @@ class BoardTest extends TestCase
 
         $response->assertSessionHasNoErrors();
         $response->assertSessionHas('pin_verified_board_id', $board->id);
+    }
+
+    public function test_reset_requires_host(): void
+    {
+        $board = Board::factory()->started()->create();
+
+        $this->post('/board/reset')->assertForbidden();
+        $this->assertDatabaseHas('boards', ['id' => $board->id]);
+    }
+
+    public function test_reset_deletes_the_board_and_cascades_to_notes_and_participants(): void
+    {
+        $board = Board::factory()->started()->create();
+        $note = Note::factory()->for($board)->create();
+        $participant = Participant::factory()->for($board)->create();
+
+        $this->withSession(['is_host' => true, 'host_board_id' => $board->id]);
+        $response = $this->post('/board/reset');
+
+        $response->assertRedirect(route('board.show'));
+        $this->assertDatabaseMissing('boards', ['id' => $board->id]);
+        $this->assertDatabaseMissing('notes', ['id' => $note->id]);
+        $this->assertDatabaseMissing('participants', ['id' => $participant->id]);
+    }
+
+    public function test_reset_clears_the_resetting_hosts_own_session_so_they_start_fresh_too(): void
+    {
+        $board = Board::factory()->started()->create();
+        Participant::factory()->for($board)->create();
+        $this->withSession([
+            'is_host' => true,
+            'host_board_id' => $board->id,
+            'pin_verified_board_id' => $board->id,
+            'participant_id' => 1,
+        ]);
+
+        $this->post('/board/reset');
+
+        $this->assertNull(session('is_host'));
+        $this->assertNull(session('host_board_id'));
+        $this->assertNull(session('pin_verified_board_id'));
+        $this->assertNull(session('participant_id'));
+    }
+
+    public function test_a_fresh_board_is_created_on_the_next_request_after_reset(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->withSession(['is_host' => true, 'host_board_id' => $board->id]);
+        $this->post('/board/reset');
+
+        $fresh = Board::current();
+
+        $this->assertNotSame($board->id, $fresh->id);
+        $this->assertFalse($fresh->is_started);
     }
 }

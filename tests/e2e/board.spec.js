@@ -196,6 +196,33 @@ test("assigning a PIC to a note updates both browsers without reload", async ({ 
   await guestCtx.close()
 })
 
+test("host resetting the board wipes it for both browsers and returns to Start Session", async ({ browser }) => {
+  const hostCtx = await browser.newContext()
+  const guestCtx = await browser.newContext()
+  const host = await hostCtx.newPage()
+  const guest = await guestCtx.newPage()
+
+  const pin = await startSessionAndGetPin(host)
+  await joinAsCurrentUser(host, "Host", COLORS.blue)
+  await joinBoard(guest, pin, "Guest", COLORS.orange)
+
+  await host.getByTestId("add-note-freeform").click()
+  await host.getByTestId("add-note-textarea").fill("Gone after reset")
+  await host.getByTestId("add-note-submit").click()
+  await expect(guest.getByTestId("note-card").filter({ hasText: "Gone after reset" })).toBeVisible()
+
+  await host.getByTestId("reset-board-open").click()
+  await host.getByTestId("reset-board-confirm").click()
+
+  // The host who reset it goes back through Start Session fresh too.
+  await expect(host.getByTestId("start-session")).toBeVisible()
+  // Guest never reloaded — purely the BoardReset broadcast driving this.
+  await expect(guest.getByTestId("start-session")).toBeVisible()
+
+  await hostCtx.close()
+  await guestCtx.close()
+})
+
 test("export downloads JSON including a freeform-section note", async ({ browser }) => {
   const hostCtx = await browser.newContext()
   const host = await hostCtx.newPage()
