@@ -3,6 +3,26 @@ import { DndContext, DragOverlay, pointerWithin, rectIntersection, closestCorner
 import { arrayMove } from "@dnd-kit/sortable"
 import { router } from "@inertiajs/react"
 import SectionStack from "./SectionStack"
+import { cn } from "@/lib/utils"
+
+// Groups sections by their role in the framework — supply side, the Value
+// Proposition bridge, demand side, and the financial check underneath —
+// reinforcing the same "does this actually connect" reading covered in the
+// BMC guide, directly on the canvas. Deliberately NOT new chromatic hues:
+// each section keeps its own already CVD-validated color for individual
+// identity (config/bmc.php); zone grouping uses only the app's existing
+// neutral surface tokens, so it doesn't need fresh color validation and
+// can't visually compete with a section's own accent.
+function Zone({ label, tint, className, children }) {
+  return (
+    <div className={cn("flex flex-col gap-2 rounded-xl border p-3", tint, className)}>
+      <div className="px-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        {label}
+      </div>
+      {children}
+    </div>
+  )
+}
 
 // closestCorners alone picks the droppable whose CORNERS are numerically
 // nearest the dragged item's corners — not "which box is my cursor actually
@@ -26,20 +46,11 @@ function collisionDetectionStrategy(args) {
 // The actual Osterwalder BMC grid, not a generic responsive layout: Key
 // Partners spans the full left column; Key Activities/Key Resources stack in
 // the next column; Value Propositions is centered and full-height; Customer
-// Relationships/Channels stack; Customer Segments spans the right column.
-// Cost Structure + Revenue Streams are a separate full-width 50/50 band
-// below — that split is independent of the 5-column top grid in the real
-// canvas, not a continuation of its column boundaries.
-const GRID_AREAS = {
-  key_partners: "partners",
-  key_activities: "activities",
-  key_resources: "resources",
-  value_propositions: "valueprop",
-  customer_relationships: "relationships",
-  channels: "channels",
-  customer_segments: "segments",
-}
-const TOP_SECTIONS = Object.keys(GRID_AREAS)
+// Relationships/Channels stack; Customer Segments spans the right column —
+// nested inside their Supply-side / Value / Demand-side zones (see Zone
+// above). Cost Structure + Revenue Streams are a separate full-width 50/50
+// band below as their own Financial-check zone, independent of the top
+// grid's column boundaries, matching the real canvas.
 
 export default function BoardCanvas({
   sections,
@@ -141,6 +152,19 @@ export default function BoardCanvas({
     )
   }
 
+  function stack(key, extraClassName) {
+    return (
+      <SectionStack
+        sectionKey={key}
+        section={sections[key]}
+        notes={notesBySection[key] ?? []}
+        readOnly={readOnly}
+        highlighted={highlightedSections?.has(key)}
+        className={extraClassName}
+      />
+    )
+  }
+
   return (
     <DndContext
       collisionDetection={collisionDetectionStrategy}
@@ -149,41 +173,39 @@ export default function BoardCanvas({
       onDragEnd={handleDragEnd}
     >
       <div ref={containerRef} className="relative flex flex-1 flex-col gap-3 overflow-auto p-4">
-        <div
-          className="grid flex-1 gap-3"
-          style={{
-            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-            gridTemplateAreas: '"partners activities valueprop relationships segments" "partners resources valueprop channels segments"',
-          }}
-        >
-          {TOP_SECTIONS.map((key) => (
-            <div key={key} style={{ gridArea: GRID_AREAS[key] }}>
-              <SectionStack
-                sectionKey={key}
-                section={sections[key]}
-                notes={notesBySection[key] ?? []}
-                readOnly={readOnly}
-                highlighted={highlightedSections?.has(key)}
-              />
+        <div className="grid flex-1 grid-cols-1 items-stretch gap-3 lg:grid-cols-[1fr_1fr_1.6fr]">
+          <Zone label="Supply-side" tint="bg-muted/20">
+            <div className="grid h-full grid-cols-2 gap-3">
+              {stack("key_partners", "h-full")}
+              <div className="flex flex-col gap-3">
+                {stack("key_activities")}
+                {stack("key_resources")}
+              </div>
             </div>
-          ))}
+          </Zone>
+
+          <Zone label="Value">{stack("value_propositions", "h-full")}</Zone>
+
+          <Zone label="Demand-side" tint="bg-accent/20">
+            <div className="grid h-full grid-cols-2 gap-3">
+              <div className="flex flex-col gap-3">
+                {stack("customer_relationships")}
+                {stack("channels")}
+              </div>
+              {stack("customer_segments", "h-full")}
+            </div>
+          </Zone>
         </div>
 
         {/* Cost Structure / Revenue Streams — a separate full-width 50/50
             band, matching the real canvas rather than continuing the top
-            5-column grid's boundaries. */}
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          {["cost_structure", "revenue_streams"].map((key) => (
-            <SectionStack
-              key={key}
-              sectionKey={key}
-              section={sections[key]}
-              notes={notesBySection[key] ?? []}
-              readOnly={readOnly}
-              highlighted={highlightedSections?.has(key)}
-            />
-          ))}
-        </div>
+            grid's column boundaries. */}
+        <Zone label="Financial check" tint="bg-muted/40">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {stack("cost_structure")}
+            {stack("revenue_streams")}
+          </div>
+        </Zone>
 
         {/* Excluded from the printed artifact — Print only ever includes the
             9 BMC sections, per the requirement. */}

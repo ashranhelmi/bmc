@@ -19,7 +19,15 @@ import { cn } from "@/lib/utils"
  * section or past the last item still resolves to the right container —
  * the standard dnd-kit multi-container pattern.
  */
-export default function SectionStack({ sectionKey, section, notes, readOnly, highlighted, isFreeform = false }) {
+export default function SectionStack({
+  sectionKey,
+  section,
+  notes,
+  readOnly,
+  highlighted,
+  isFreeform = false,
+  className,
+}) {
   const [expanded, setExpanded] = React.useState(isFreeform)
   const { setNodeRef, isOver } = useDroppable({ id: sectionKey })
 
@@ -34,6 +42,7 @@ export default function SectionStack({ sectionKey, section, notes, readOnly, hig
       data-testid={`section-${sectionKey}`}
       className={cn(
         "relative flex min-h-[10rem] flex-col overflow-hidden rounded-lg border transition-shadow",
+        className,
         isFreeform && "min-h-[16rem]",
         // A brief pulse when a broadcast touches this section — see
         // Show.jsx's flashSection. Not an auto-expand: a collapsed section
