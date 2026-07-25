@@ -10,9 +10,22 @@ import BoardCanvas from "./BoardCanvas"
 import HostControls from "./HostControls"
 import ExportButton from "./ExportButton"
 import PrintButton from "./PrintButton"
+import ParticipantRoster from "./ParticipantRoster"
+import GuideDialog from "./GuideDialog"
 import { Button } from "@/components/ui/button"
 import exampleData from "@/data/exampleCanvas.json"
 import { BookOpenIcon, XIcon } from "lucide-react"
+
+// Derived once, not per-render — the example view's roster is static fixture
+// data, so this teaches the SAME roster UI the live board uses (per DHelm's
+// ask) without needing a live presence channel behind it.
+const EXAMPLE_ROSTER = Array.from(
+  new Map(exampleData.notes.map((n) => [n.author_name, { id: n.author_name, displayName: n.author_name, color: n.color }])).values(),
+)
+
+// How long a section's header stays pulsed after a broadcast touches it —
+// long enough to notice, short enough not to nag.
+const HIGHLIGHT_DURATION_MS = 2000
 
 export default function Show({
   board,
@@ -22,14 +35,18 @@ export default function Show({
   sections,
   freeformKey,
   participantColors,
-  takenColors: initialTakenColors,
+  participants: initialParticipants,
   notes: initialNotes,
 }) {
   const isTooSmall = useDeviceGate()
   const [notes, setNotes] = React.useState(initialNotes)
   const [isLocked, setIsLocked] = React.useState(board.isLocked)
   const [showShareScreen, setShowShareScreen] = React.useState(isHost && board.isStarted)
-  const [takenColors, setTakenColors] = React.useState(initialTakenColors)
+  // The single source of truth for "who's here" — JoinPrompt's disabled
+  // swatches are derived from this, not tracked separately.
+  const [roster, setRoster] = React.useState(initialParticipants)
+  const [highlightedSections, setHighlightedSections] = React.useState(() => new Set())
+  const highlightTimersRef = React.useRef(new Map())
   const [channel, setChannel] = React.useState(null)
   // Distinct from `channel` — window.Echo.join() returns a channel object
   // synchronously, well before the actual WebSocket subscription handshake
@@ -59,7 +76,27 @@ export default function Show({
 
   React.useEffect(() => setNotes(initialNotes), [initialNotes])
   React.useEffect(() => setIsLocked(board.isLocked), [board.isLocked])
-  React.useEffect(() => setTakenColors(initialTakenColors), [initialTakenColors])
+  React.useEffect(() => setRoster(initialParticipants), [initialParticipants])
+
+  // Briefly pulses a section's header when a broadcast touches it — a
+  // non-disruptive "something changed here" signal. Deliberately NOT an
+  // auto-expand: that would violate the already-established rule that
+  // expand/collapse stays per-viewer, never forced by someone else's action.
+  // Each section gets its OWN timer so a second update to the same section
+  // resets its highlight window instead of an earlier timer cutting it short.
+  const flashSection = React.useCallback((sectionKey) => {
+    setHighlightedSections((prev) => new Set(prev).add(sectionKey))
+    clearTimeout(highlightTimersRef.current.get(sectionKey))
+    const timer = setTimeout(() => {
+      setHighlightedSections((prev) => {
+        const next = new Set(prev)
+        next.delete(sectionKey)
+        return next
+      })
+      highlightTimersRef.current.delete(sectionKey)
+    }, HIGHLIGHT_DURATION_MS)
+    highlightTimersRef.current.set(sectionKey, timer)
+  }, [])
 
   const { removeCursor } = useCursorBroadcast({ channel, containerRef, cursorLayerRef, participant })
 
@@ -78,6 +115,7 @@ export default function Show({
         next[idx] = note
         return next
       })
+      flashSection(note.section)
     }
 
     publicChannel
@@ -90,21 +128,23 @@ export default function Show({
     return () => {
       window.Echo.leave(`board.${board.id}`)
     }
-  }, [board.id])
+  }, [board.id, flashSection])
 
   // Presence channel — only once joined (auth requires a real participant),
-  // for live cursors and roster-driven color availability.
+  // for live cursors and the roster.
   React.useEffect(() => {
     if (!board.id || !participant || !window.Echo) return
 
     const presence = window.Echo.join(`presence-board.${board.id}`)
       .here((members) => {
-        setTakenColors(members.map((m) => m.color))
+        setRoster(members.map((m) => ({ id: m.id, displayName: m.name, color: m.color })))
         setPresenceReady(true)
       })
-      .joining((member) => setTakenColors((prev) => [...prev, member.color]))
+      .joining((member) =>
+        setRoster((prev) => [...prev, { id: member.id, displayName: member.name, color: member.color }]),
+      )
       .leaving((member) => {
-        setTakenColors((prev) => prev.filter((c) => c !== member.color))
+        setRoster((prev) => prev.filter((p) => p.id !== member.id))
         removeCursor(member.id)
         // See ParticipantController::leave — any other still-connected
         // client reports the departure server-side, since Reverb's own
@@ -168,17 +208,10 @@ export default function Show({
     <>
       <Head title="BMC" />
       <div className="flex h-screen flex-col" data-testid="board-page" data-presence-ready={presenceReady ? "true" : "false"}>
-        <header className="flex items-center justify-between gap-3 border-b p-3 print:hidden">
-          <div className="flex items-center gap-2">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b p-3 print:hidden">
+          <div className="flex flex-wrap items-center gap-2">
             <h1 className="font-semibold">Business Model Canvas</h1>
-            {participant && (
-              <span
-                className="rounded px-2 py-0.5 text-xs font-medium text-white"
-                style={{ backgroundColor: participant.color }}
-              >
-                {participant.displayName}
-              </span>
-            )}
+            <ParticipantRoster participants={viewingExample ? EXAMPLE_ROSTER : roster} />
             {isLocked && (
               <span className="rounded bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                 Locked
@@ -186,6 +219,7 @@ export default function Show({
             )}
           </div>
           <div className="flex items-center gap-2">
+            <GuideDialog sections={sections} />
             {!viewingExample && (
               <Button variant="outline" size="sm" onClick={() => setViewingExample(true)}>
                 <BookOpenIcon /> See an example
@@ -213,13 +247,14 @@ export default function Show({
           freeformKey={freeformKey}
           notes={viewingExample ? exampleData.notes : notes}
           readOnly={viewingExample || !participant || isLocked}
+          highlightedSections={highlightedSections}
           containerRef={containerRef}
           cursorLayerRef={cursorLayerRef}
         />
       </div>
 
       {!participant && !isLocked && (
-        <JoinPrompt participantColors={participantColors} takenColors={takenColors} />
+        <JoinPrompt participantColors={participantColors} takenColors={roster.map((p) => p.color)} />
       )}
     </>
   )

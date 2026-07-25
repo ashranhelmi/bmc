@@ -67,6 +67,36 @@ test("host starts a session and a participant's new note appears for the host wi
   await guestCtx.close()
 })
 
+test("both participants see each other in the header roster, and a new note pulses its section", async ({ browser }) => {
+  const hostCtx = await browser.newContext()
+  const guestCtx = await browser.newContext()
+  const host = await hostCtx.newPage()
+  const guest = await guestCtx.newPage()
+
+  const pin = await startSessionAndGetPin(host)
+  await joinAsCurrentUser(host, "Host", COLORS.blue)
+  await joinBoard(guest, pin, "Guest", COLORS.orange)
+
+  // Each side's roster must include BOTH participants, not just themselves.
+  const hostRoster = host.getByTestId("participant-roster")
+  const guestRoster = guest.getByTestId("participant-roster")
+  await expect(hostRoster.getByText("Host")).toBeVisible()
+  await expect(hostRoster.getByText("Guest")).toBeVisible()
+  await expect(guestRoster.getByText("Host")).toBeVisible()
+  await expect(guestRoster.getByText("Guest")).toBeVisible()
+
+  await guest.getByTestId("add-note-key_partners").click()
+  await guest.getByTestId("add-note-textarea").fill("Watch this section pulse")
+  await guest.getByTestId("add-note-submit").click()
+
+  // The host never expanded the section — the pulse is a passive signal on
+  // the still-collapsed header, not something that requires interaction.
+  await expect(host.getByTestId("section-key_partners")).toHaveClass(/animate-pulse/)
+
+  await hostCtx.close()
+  await guestCtx.close()
+})
+
 test("a color already claimed by a connected participant is rejected for the next joiner", async ({ browser }) => {
   const hostCtx = await browser.newContext()
   const guestCtx = await browser.newContext()

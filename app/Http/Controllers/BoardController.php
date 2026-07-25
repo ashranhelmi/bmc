@@ -44,13 +44,15 @@ class BoardController extends Controller
             'sections' => config('bmc.sections'),
             'freeformKey' => config('bmc.freeform_key'),
             'participantColors' => config('bmc.participant_colors'),
-            // Initial snapshot for JoinPrompt's disabled-swatch hint — a
-            // not-yet-joined viewer can't subscribe to the presence channel
-            // at all (its auth requires an existing participant_id), so this
-            // can't come from Echo the way it does after joining. The real
-            // correctness guarantee is still the server-side transaction in
-            // ParticipantController, not this hint.
-            'takenColors' => $board->connectedParticipants()->pluck('color'),
+            // Initial snapshot for the header roster + JoinPrompt's
+            // disabled-swatch hint — a not-yet-joined viewer can't subscribe
+            // to the presence channel at all (its auth requires an existing
+            // participant_id), so this can't come from Echo the way it does
+            // after joining. The real color-uniqueness guarantee is still
+            // the server-side transaction in ParticipantController, not
+            // this snapshot.
+            'participants' => $board->connectedParticipants()->get(['id', 'display_name', 'color'])
+                ->map(fn ($p) => ['id' => $p->id, 'displayName' => $p->display_name, 'color' => $p->color]),
             'notes' => $board->is_started ? $board->notes()
                 ->orderBy('sort_order')
                 ->get(['id', 'section', 'body', 'color', 'author_name', 'sort_order']) : [],

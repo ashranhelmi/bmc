@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils"
  * section or past the last item still resolves to the right container —
  * the standard dnd-kit multi-container pattern.
  */
-export default function SectionStack({ sectionKey, section, notes, readOnly, isFreeform = false }) {
+export default function SectionStack({ sectionKey, section, notes, readOnly, highlighted, isFreeform = false }) {
   const [expanded, setExpanded] = React.useState(isFreeform)
   const { setNodeRef, isOver } = useDroppable({ id: sectionKey })
 
@@ -31,9 +31,14 @@ export default function SectionStack({ sectionKey, section, notes, readOnly, isF
 
   return (
     <div
+      data-testid={`section-${sectionKey}`}
       className={cn(
-        "relative flex min-h-[10rem] flex-col overflow-hidden rounded-lg border",
+        "relative flex min-h-[10rem] flex-col overflow-hidden rounded-lg border transition-shadow",
         isFreeform && "min-h-[16rem]",
+        // A brief pulse when a broadcast touches this section — see
+        // Show.jsx's flashSection. Not an auto-expand: a collapsed section
+        // stays collapsed, this only draws the eye to it.
+        highlighted && "animate-pulse ring-2 ring-primary",
       )}
       style={{ backgroundColor: isFreeform ? undefined : `${section.color}1a` }}
     >

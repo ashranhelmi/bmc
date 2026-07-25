@@ -41,7 +41,15 @@ const GRID_AREAS = {
 }
 const TOP_SECTIONS = Object.keys(GRID_AREAS)
 
-export default function BoardCanvas({ sections, freeformKey, notes, readOnly, cursorLayerRef, containerRef }) {
+export default function BoardCanvas({
+  sections,
+  freeformKey,
+  notes,
+  readOnly,
+  highlightedSections,
+  cursorLayerRef,
+  containerRef,
+}) {
   const [notesBySection, setNotesBySection] = React.useState(() => groupBySection(notes, sections, freeformKey))
   const [activeNote, setActiveNote] = React.useState(null)
   const draggingRef = React.useRef(false)
@@ -155,6 +163,7 @@ export default function BoardCanvas({ sections, freeformKey, notes, readOnly, cu
                 section={sections[key]}
                 notes={notesBySection[key] ?? []}
                 readOnly={readOnly}
+                highlighted={highlightedSections?.has(key)}
               />
             </div>
           ))}
@@ -171,6 +180,7 @@ export default function BoardCanvas({ sections, freeformKey, notes, readOnly, cu
               section={sections[key]}
               notes={notesBySection[key] ?? []}
               readOnly={readOnly}
+              highlighted={highlightedSections?.has(key)}
             />
           ))}
         </div>
@@ -183,6 +193,7 @@ export default function BoardCanvas({ sections, freeformKey, notes, readOnly, cu
             section={null}
             notes={notesBySection[freeformKey] ?? []}
             readOnly={readOnly}
+            highlighted={highlightedSections?.has(freeformKey)}
             isFreeform
           />
         </div>
