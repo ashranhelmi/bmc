@@ -166,6 +166,36 @@ test("locking the board hides the add-note control for participants", async ({ b
   await guestCtx.close()
 })
 
+test("assigning a PIC to a note updates both browsers without reload", async ({ browser }) => {
+  const hostCtx = await browser.newContext()
+  const guestCtx = await browser.newContext()
+  const host = await hostCtx.newPage()
+  const guest = await guestCtx.newPage()
+
+  const pin = await startSessionAndGetPin(host)
+  await joinAsCurrentUser(host, "Host", COLORS.blue)
+  await joinBoard(guest, pin, "Guest", COLORS.orange)
+
+  await host.getByTestId("add-note-freeform").click()
+  await host.getByTestId("add-note-textarea").fill("Needs an owner")
+  await host.getByTestId("add-note-submit").click()
+
+  const hostNote = host.getByTestId("note-card").filter({ hasText: "Needs an owner" })
+  await hostNote.getByTestId("note-pic-tag").click()
+  await hostNote.getByTestId("note-pic-input").fill("Ivan")
+  await hostNote.getByTestId("note-pic-input").press("Enter")
+
+  // Assigning a PIC is unrelated to who authored the note ("Host" here) —
+  // both sides should see the "Ivan" tag purely via the broadcast, guest
+  // never reloaded.
+  await expect(hostNote.getByTestId("note-pic-tag")).toHaveText(/Ivan/)
+  const guestNote = guest.getByTestId("note-card").filter({ hasText: "Needs an owner" })
+  await expect(guestNote.getByTestId("note-pic-tag")).toHaveText(/Ivan/)
+
+  await hostCtx.close()
+  await guestCtx.close()
+})
+
 test("export downloads JSON including a freeform-section note", async ({ browser }) => {
   const hostCtx = await browser.newContext()
   const host = await hostCtx.newPage()
@@ -212,7 +242,11 @@ test("dragging a note from a section into the free-form area updates both browse
   const noteBox = await noteCard.boundingBox()
   const targetBox = await host.getByTestId("section-drop-freeform").boundingBox()
   const startX = noteBox.x + noteBox.width / 2
-  const startY = noteBox.y + noteBox.height / 2
+  // Near the TOP of the card (the number badge/body row), not the vertical
+  // center — the card now also has a PIC tag row at the bottom, and that
+  // tag's own onPointerDown stopPropagation would swallow the drag gesture
+  // entirely if the drag happened to start on top of it.
+  const startY = noteBox.y + 12
   const endX = targetBox.x + targetBox.width / 2
   const endY = targetBox.y + targetBox.height / 2
 

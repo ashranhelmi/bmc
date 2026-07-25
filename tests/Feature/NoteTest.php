@@ -155,4 +155,52 @@ class NoteTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_a_joined_participant_can_assign_a_pic_to_any_note_regardless_of_who_authored_it(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->joinedSession($board);
+        $note = Note::factory()->for($board)->create(['author_name' => 'Ivan', 'pic' => null]);
+
+        $response = $this->patch("/board/notes/{$note->id}/pic", ['pic' => 'Maslin']);
+
+        $response->assertSessionHasNoErrors();
+        $note->refresh();
+        $this->assertSame('Maslin', $note->pic);
+        $this->assertSame('Ivan', $note->author_name, 'PIC must not overwrite who actually typed the note');
+    }
+
+    public function test_pic_can_be_cleared_back_to_unassigned(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->joinedSession($board);
+        $note = Note::factory()->for($board)->create(['pic' => 'Ivan']);
+
+        $this->patch("/board/notes/{$note->id}/pic", ['pic' => ''])
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($note->fresh()->pic);
+    }
+
+    public function test_assigning_a_pic_requires_a_joined_participant(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->withSession(['pin_verified_board_id' => $board->id]);
+        $note = Note::factory()->for($board)->create();
+
+        $response = $this->patch("/board/notes/{$note->id}/pic", ['pic' => 'Someone']);
+
+        $response->assertForbidden();
+    }
+
+    public function test_assigning_a_pic_on_a_note_from_another_board_is_rejected(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->joinedSession($board);
+        $otherBoardsNote = Note::factory()->for(Board::factory()->create())->create();
+
+        $response = $this->patch("/board/notes/{$otherBoardsNote->id}/pic", ['pic' => 'Someone']);
+
+        $response->assertNotFound();
+    }
 }

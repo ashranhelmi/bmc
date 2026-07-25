@@ -101,6 +101,18 @@ export default function Show({
 
   const { removeCursor } = useCursorBroadcast({ channel, containerRef, cursorLayerRef, participant })
 
+  // The PIC patch request uses preserveState: true (like reorder does, and
+  // for the same reason — a fresh remount here would tear down the Echo/
+  // presence channel just to save one small field). That means the actor's
+  // OWN change never arrives via a refreshed prop, and the broadcast is
+  // `.toOthers()` only, so it never arrives via that path for the actor
+  // either — this optimistic update is what makes it show up for the person
+  // who actually made the change, same idea as BoardCanvas's own drag-end
+  // optimistic update.
+  const updateNotePic = React.useCallback((noteId, pic) => {
+    setNotes((prev) => prev.map((n) => (n.id === noteId ? { ...n, pic } : n)))
+  }, [])
+
   // Public channel — anyone can subscribe regardless of join state, since
   // even a not-yet-joined viewer needs to know when Start/Lock/Import happen.
   React.useEffect(() => {
@@ -122,6 +134,7 @@ export default function Show({
     publicChannel
       .listen(".note.created", ({ note }) => upsertNote(note))
       .listen(".notes.reordered", ({ notes: changed }) => changed.forEach(upsertNote))
+      .listen(".note.pic-updated", ({ note }) => upsertNote(note))
       .listen(".board.lock-toggled", ({ isLocked: locked }) => setIsLocked(locked))
       .listen(".board.started", () => router.reload())
       .listen(".board.imported", () => router.reload())
@@ -249,6 +262,7 @@ export default function Show({
           freeformKey={freeformKey}
           notes={viewingExample ? exampleData.notes : notes}
           readOnly={viewingExample || !participant || isLocked}
+          onPicChange={updateNotePic}
           highlightedSections={highlightedSections}
           containerRef={containerRef}
           cursorLayerRef={cursorLayerRef}

@@ -1,54 +1,333 @@
 {
   "businessName": "Example: HOMM-Shop × WhiteDot — Malaysia today, Saudi/Madinah expansion",
   "notes": [
-    { "id": "ex-1", "section": "key_partners", "body": "Overseas carpet & tile manufacturers (China) — direct relationships, negotiated in Mandarin", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 0 },
-    { "id": "ex-2", "section": "key_partners", "body": "Billplz — Malaysian payment gateway for online checkout", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 1 },
-    { "id": "ex-3", "section": "key_partners", "body": "Saudi/Madinah expansion: need a local import agent — customs clearance + SASO product certification", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 2 },
-    { "id": "ex-4", "section": "key_partners", "body": "Saudi/Madinah expansion: hotel & serviced-apartment developers in Madinah as bulk-order channel partners", "color": "#eb6834", "author_name": "Maslin", "sort_order": 3 },
-
-    { "id": "ex-5", "section": "key_activities", "body": "Sourcing trips to China — item selection & price negotiation", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 0 },
-    { "id": "ex-6", "section": "key_activities", "body": "Catalogue, pricing engine & fulfillment ops", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 1 },
-    { "id": "ex-7", "section": "key_activities", "body": "Digital marketing & business development — growing trade/bulk accounts", "color": "#eb6834", "author_name": "Maslin", "sort_order": 2 },
-    { "id": "ex-8", "section": "key_activities", "body": "Client styling consultations — coaching clients through material/colour choices, not just selling", "color": "#e87ba4", "author_name": "Putri", "sort_order": 3 },
-    { "id": "ex-9", "section": "key_activities", "body": "Saudi/Madinah expansion: localising marketing for Gulf audiences — Arabic content, Snapchat/Instagram", "color": "#eb6834", "author_name": "Maslin", "sort_order": 4 },
-
-    { "id": "ex-10", "section": "key_resources", "body": "In-house ecommerce platform & catalogue system", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 0 },
-    { "id": "ex-11", "section": "key_resources", "body": "KL warehouse & inventory", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 1 },
-    { "id": "ex-12", "section": "key_resources", "body": "Putri's personal brand & HR-coaching credibility — the trusted \"face\" of the business", "color": "#e87ba4", "author_name": "Putri", "sort_order": 2 },
-    { "id": "ex-13", "section": "key_resources", "body": "Saudi/Madinah expansion: would need a second warehouse/consignment stock near Jeddah or Madinah", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 3 },
-
-    { "id": "ex-14", "section": "value_propositions", "body": "Wide, directly-sourced catalogue at competitive prices — no middleman markup", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 0 },
-    { "id": "ex-15", "section": "value_propositions", "body": "Personal, coached buying experience — not just transactional retail", "color": "#e87ba4", "author_name": "Putri", "sort_order": 1 },
-    { "id": "ex-16", "section": "value_propositions", "body": "Saudi/Madinah expansion: culturally-attuned curation — majlis-style carpets, Islamic geometric patterns, gold/neutral palettes", "color": "#eb6834", "author_name": "Maslin", "sort_order": 2 },
-    { "id": "ex-17", "section": "value_propositions", "body": "Saudi/Madinah expansion: trusted quality at Gulf-competitive price, backed by direct China sourcing relationships", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 3 },
-
-    { "id": "ex-18", "section": "customer_relationships", "body": "Personal styling consultations — Putri's HR-coaching background applied to genuine client advisory, not sales pressure", "color": "#e87ba4", "author_name": "Putri", "sort_order": 0 },
-    { "id": "ex-19", "section": "customer_relationships", "body": "Self-service online store — browse, order, track", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 1 },
-    { "id": "ex-20", "section": "customer_relationships", "body": "Saudi/Madinah expansion: relationship-first sales — trust matters more than price in Gulf B2B deals", "color": "#eb6834", "author_name": "Maslin", "sort_order": 2 },
-
-    { "id": "ex-21", "section": "channels", "body": "shop.homm.com.my — own storefront", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 0 },
-    { "id": "ex-22", "section": "channels", "body": "Instagram & Facebook — design inspiration content", "color": "#eb6834", "author_name": "Maslin", "sort_order": 1 },
-    { "id": "ex-23", "section": "channels", "body": "Saudi/Madinah expansion: Snapchat — dominant platform for Saudi social commerce", "color": "#eb6834", "author_name": "Maslin", "sort_order": 2 },
-    { "id": "ex-24", "section": "channels", "body": "Saudi/Madinah expansion: direct B2B outreach to hotel/developer decision-makers in Madinah", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 3 },
-
-    { "id": "ex-25", "section": "customer_segments", "body": "Malaysian homeowners renovating or furnishing", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 0 },
-    { "id": "ex-26", "section": "customer_segments", "body": "Interior designers & contractors sourcing for clients", "color": "#eb6834", "author_name": "Maslin", "sort_order": 1 },
-    { "id": "ex-27", "section": "customer_segments", "body": "Saudi/Madinah expansion: Gulf homeowners — high purchasing power, villa renovations", "color": "#e87ba4", "author_name": "Putri", "sort_order": 2 },
-    { "id": "ex-28", "section": "customer_segments", "body": "Saudi/Madinah expansion: hotels & serviced apartments furnishing for Umrah/Hajj pilgrim traffic", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 3 },
-
-    { "id": "ex-29", "section": "revenue_streams", "body": "Retail sales — per-unit markup over landed cost", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 0 },
-    { "id": "ex-30", "section": "revenue_streams", "body": "Trade/bulk pricing for designers & contractors", "color": "#eb6834", "author_name": "Maslin", "sort_order": 1 },
-    { "id": "ex-31", "section": "revenue_streams", "body": "Saudi/Madinah expansion: bulk hospitality furnishing contracts — larger tickets, less price-sensitive", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 2 },
-    { "id": "ex-32", "section": "revenue_streams", "body": "Saudi/Madinah expansion: seasonal Umrah/Hajj gifting line — small, shippable decor items", "color": "#e87ba4", "author_name": "Putri", "sort_order": 3 },
-
-    { "id": "ex-33", "section": "cost_structure", "body": "Landed product cost — China sourcing + Malaysia logistics", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 0 },
-    { "id": "ex-34", "section": "cost_structure", "body": "Platform development & maintenance", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 1 },
-    { "id": "ex-35", "section": "cost_structure", "body": "Saudi/Madinah expansion: new MY→Saudi freight lane + SASO certification costs", "color": "#eb6834", "author_name": "Maslin", "sort_order": 2 },
-    { "id": "ex-36", "section": "cost_structure", "body": "Saudi/Madinah expansion: local agent commission / entity setup — need to verify actual requirement", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 3 },
-
-    { "id": "ex-37", "section": "freeform", "body": "Idea: Putri's coaching angle could extend to advising hotel staff on guest-experience decor, not just selling to them", "color": "#e87ba4", "author_name": "Putri", "sort_order": 0 },
-    { "id": "ex-38", "section": "freeform", "body": "Open question: does Saudi require a local sponsor/registered entity for foreign trading? — verify before committing", "color": "#1baf7a", "author_name": "DHelm", "sort_order": 1 },
-    { "id": "ex-39", "section": "freeform", "body": "Reminder: compare Malaysia retail margin vs Gulf hospitality bulk margin once freight/certification costs are in", "color": "#eb6834", "author_name": "Maslin", "sort_order": 2 },
-    { "id": "ex-40", "section": "freeform", "body": "Next: scope a small pilot shipment to Madinah before committing to a full local partner", "color": "#2a78d6", "author_name": "Ivan", "sort_order": 3 }
+    {
+      "id": "ex-1",
+      "section": "key_partners",
+      "body": "Overseas carpet & tile manufacturers (China) — direct relationships, negotiated in Mandarin",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-2",
+      "section": "key_partners",
+      "body": "Billplz — Malaysian payment gateway for online checkout",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-3",
+      "section": "key_partners",
+      "body": "Saudi/Madinah expansion: need a local import agent — customs clearance + SASO product certification",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 2,
+      "pic": "Ivan"
+    },
+    {
+      "id": "ex-4",
+      "section": "key_partners",
+      "body": "Saudi/Madinah expansion: hotel & serviced-apartment developers in Madinah as bulk-order channel partners",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 3
+    },
+    {
+      "id": "ex-5",
+      "section": "key_activities",
+      "body": "Sourcing trips to China — item selection & price negotiation",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-6",
+      "section": "key_activities",
+      "body": "Catalogue, pricing engine & fulfillment ops",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-7",
+      "section": "key_activities",
+      "body": "Digital marketing & business development — growing trade/bulk accounts",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 2
+    },
+    {
+      "id": "ex-8",
+      "section": "key_activities",
+      "body": "Client styling consultations — coaching clients through material/colour choices, not just selling",
+      "color": "#e87ba4",
+      "author_name": "Putri",
+      "sort_order": 3
+    },
+    {
+      "id": "ex-9",
+      "section": "key_activities",
+      "body": "Saudi/Madinah expansion: localising marketing for Gulf audiences — Arabic content, Snapchat/Instagram",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 4,
+      "pic": "Putri"
+    },
+    {
+      "id": "ex-10",
+      "section": "key_resources",
+      "body": "In-house ecommerce platform & catalogue system",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-11",
+      "section": "key_resources",
+      "body": "KL warehouse & inventory",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-12",
+      "section": "key_resources",
+      "body": "Putri's personal brand & HR-coaching credibility — the trusted \"face\" of the business",
+      "color": "#e87ba4",
+      "author_name": "Putri",
+      "sort_order": 2
+    },
+    {
+      "id": "ex-13",
+      "section": "key_resources",
+      "body": "Saudi/Madinah expansion: would need a second warehouse/consignment stock near Jeddah or Madinah",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 3,
+      "pic": "Ivan"
+    },
+    {
+      "id": "ex-14",
+      "section": "value_propositions",
+      "body": "Wide, directly-sourced catalogue at competitive prices — no middleman markup",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-15",
+      "section": "value_propositions",
+      "body": "Personal, coached buying experience — not just transactional retail",
+      "color": "#e87ba4",
+      "author_name": "Putri",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-16",
+      "section": "value_propositions",
+      "body": "Saudi/Madinah expansion: culturally-attuned curation — majlis-style carpets, Islamic geometric patterns, gold/neutral palettes",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 2
+    },
+    {
+      "id": "ex-17",
+      "section": "value_propositions",
+      "body": "Saudi/Madinah expansion: trusted quality at Gulf-competitive price, backed by direct China sourcing relationships",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 3
+    },
+    {
+      "id": "ex-18",
+      "section": "customer_relationships",
+      "body": "Personal styling consultations — Putri's HR-coaching background applied to genuine client advisory, not sales pressure",
+      "color": "#e87ba4",
+      "author_name": "Putri",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-19",
+      "section": "customer_relationships",
+      "body": "Self-service online store — browse, order, track",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-20",
+      "section": "customer_relationships",
+      "body": "Saudi/Madinah expansion: relationship-first sales — trust matters more than price in Gulf B2B deals",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 2
+    },
+    {
+      "id": "ex-21",
+      "section": "channels",
+      "body": "shop.homm.com.my — own storefront",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-22",
+      "section": "channels",
+      "body": "Instagram & Facebook — design inspiration content",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-23",
+      "section": "channels",
+      "body": "Saudi/Madinah expansion: Snapchat — dominant platform for Saudi social commerce",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 2
+    },
+    {
+      "id": "ex-24",
+      "section": "channels",
+      "body": "Saudi/Madinah expansion: direct B2B outreach to hotel/developer decision-makers in Madinah",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 3,
+      "pic": "Maslin"
+    },
+    {
+      "id": "ex-25",
+      "section": "customer_segments",
+      "body": "Malaysian homeowners renovating or furnishing",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-26",
+      "section": "customer_segments",
+      "body": "Interior designers & contractors sourcing for clients",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-27",
+      "section": "customer_segments",
+      "body": "Saudi/Madinah expansion: Gulf homeowners — high purchasing power, villa renovations",
+      "color": "#e87ba4",
+      "author_name": "Putri",
+      "sort_order": 2
+    },
+    {
+      "id": "ex-28",
+      "section": "customer_segments",
+      "body": "Saudi/Madinah expansion: hotels & serviced apartments furnishing for Umrah/Hajj pilgrim traffic",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 3
+    },
+    {
+      "id": "ex-29",
+      "section": "revenue_streams",
+      "body": "Retail sales — per-unit markup over landed cost",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-30",
+      "section": "revenue_streams",
+      "body": "Trade/bulk pricing for designers & contractors",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-31",
+      "section": "revenue_streams",
+      "body": "Saudi/Madinah expansion: bulk hospitality furnishing contracts — larger tickets, less price-sensitive",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 2,
+      "pic": "Maslin"
+    },
+    {
+      "id": "ex-32",
+      "section": "revenue_streams",
+      "body": "Saudi/Madinah expansion: seasonal Umrah/Hajj gifting line — small, shippable decor items",
+      "color": "#e87ba4",
+      "author_name": "Putri",
+      "sort_order": 3
+    },
+    {
+      "id": "ex-33",
+      "section": "cost_structure",
+      "body": "Landed product cost — China sourcing + Malaysia logistics",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-34",
+      "section": "cost_structure",
+      "body": "Platform development & maintenance",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 1
+    },
+    {
+      "id": "ex-35",
+      "section": "cost_structure",
+      "body": "Saudi/Madinah expansion: new MY→Saudi freight lane + SASO certification costs",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 2,
+      "pic": "DHelm"
+    },
+    {
+      "id": "ex-36",
+      "section": "cost_structure",
+      "body": "Saudi/Madinah expansion: local agent commission / entity setup — need to verify actual requirement",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 3
+    },
+    {
+      "id": "ex-37",
+      "section": "freeform",
+      "body": "Idea: Putri's coaching angle could extend to advising hotel staff on guest-experience decor, not just selling to them",
+      "color": "#e87ba4",
+      "author_name": "Putri",
+      "sort_order": 0
+    },
+    {
+      "id": "ex-38",
+      "section": "freeform",
+      "body": "Open question: does Saudi require a local sponsor/registered entity for foreign trading? — verify before committing",
+      "color": "#1baf7a",
+      "author_name": "DHelm",
+      "sort_order": 1,
+      "pic": "Ivan"
+    },
+    {
+      "id": "ex-39",
+      "section": "freeform",
+      "body": "Reminder: compare Malaysia retail margin vs Gulf hospitality bulk margin once freight/certification costs are in",
+      "color": "#eb6834",
+      "author_name": "Maslin",
+      "sort_order": 2
+    },
+    {
+      "id": "ex-40",
+      "section": "freeform",
+      "body": "Next: scope a small pilot shipment to Madinah before committing to a full local partner",
+      "color": "#2a78d6",
+      "author_name": "Ivan",
+      "sort_order": 3,
+      "pic": "Ivan"
+    }
   ]
 }

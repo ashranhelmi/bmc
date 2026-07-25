@@ -15,6 +15,7 @@ class NoteFactory extends Factory
             'body' => fake()->sentence(),
             'color' => fake()->randomElement(config('bmc.participant_colors')),
             'author_name' => fake()->firstName(),
+            'pic' => null,
             'sort_order' => fake()->numberBetween(0, 20),
         ];
     }

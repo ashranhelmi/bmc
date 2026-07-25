@@ -24,6 +24,7 @@ export default function SectionStack({
   section,
   notes,
   readOnly,
+  onPicChange,
   highlighted,
   isFreeform = false,
   className,
@@ -101,7 +102,7 @@ export default function SectionStack({
             strategy={verticalListSortingStrategy}
           >
             {notes.map((note, i) => (
-              <NoteCard key={note.id} note={note} number={i + 1} readOnly={readOnly} />
+              <NoteCard key={note.id} note={note} number={i + 1} readOnly={readOnly} onPicChange={onPicChange} />
             ))}
           </SortableContext>
           {!readOnly && (

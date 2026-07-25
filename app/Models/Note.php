@@ -16,6 +16,7 @@ class Note extends Model
         'body',
         'color',
         'author_name',
+        'pic',
         'participant_id',
         'sort_order',
     ];

@@ -65,6 +65,7 @@ export default function BoardCanvas({
   freeformKey,
   notes,
   readOnly,
+  onPicChange,
   highlightedSections,
   cursorLayerRef,
   containerRef,
@@ -167,6 +168,7 @@ export default function BoardCanvas({
         section={sections[key]}
         notes={notesBySection[key] ?? []}
         readOnly={readOnly}
+        onPicChange={onPicChange}
         highlighted={highlightedSections?.has(key)}
         className={extraClassName}
       />
@@ -225,6 +227,7 @@ export default function BoardCanvas({
             section={null}
             notes={notesBySection[freeformKey] ?? []}
             readOnly={readOnly}
+            onPicChange={onPicChange}
             highlighted={highlightedSections?.has(freeformKey)}
             isFreeform
           />
@@ -245,9 +248,6 @@ export default function BoardCanvas({
             style={{ backgroundColor: activeNote.color, color: "#fff" }}
           >
             <div className="min-w-0 flex-1">
-              <div className="mb-0.5 truncate text-[10px] font-semibold opacity-80">
-                {activeNote.author_name}
-              </div>
               <div className="break-words">{activeNote.body}</div>
             </div>
           </div>

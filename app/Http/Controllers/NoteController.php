@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\NoteCreated;
+use App\Events\NotePicUpdated;
 use App\Events\NotesReordered;
 use App\Models\Board;
 use App\Models\Note;
@@ -86,6 +87,30 @@ class NoteController extends Controller
         });
 
         broadcast(new NotesReordered($changed, $board->id))->toOthers();
+
+        return back();
+    }
+
+    /**
+     * PIC ("who's responsible") is deliberately separate from author_name —
+     * that's snapshotted at creation and records who typed the note, not who
+     * owns executing it. Free text rather than a participant reference, so
+     * it can name anyone (including people never connected to the session)
+     * and survives export/import as plain data. Any joined participant can
+     * set/change any note's PIC — same no-ownership-gate model as notes
+     * themselves.
+     */
+    public function updatePic(Request $request, Note $note)
+    {
+        $validated = $request->validate([
+            'pic' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        abort_if($note->board_id !== Board::current()->id, 404);
+
+        $note->update(['pic' => $validated['pic'] ?? null]);
+
+        broadcast(new NotePicUpdated($note))->toOthers();
 
         return back();
     }

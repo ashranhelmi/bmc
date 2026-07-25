@@ -55,7 +55,7 @@ class BoardController extends Controller
                 ->map(fn ($p) => ['id' => $p->id, 'displayName' => $p->display_name, 'color' => $p->color]),
             'notes' => $board->is_started ? $board->notes()
                 ->orderBy('sort_order')
-                ->get(['id', 'section', 'body', 'color', 'author_name', 'sort_order']) : [],
+                ->get(['id', 'section', 'body', 'color', 'author_name', 'pic', 'sort_order']) : [],
         ]);
     }
 
@@ -132,7 +132,7 @@ class BoardController extends Controller
             'is_locked' => $board->is_locked,
             'exported_at' => now()->toIso8601String(),
             'notes' => $board->notes()->orderBy('sort_order')->get([
-                'section', 'body', 'color', 'author_name', 'sort_order',
+                'section', 'body', 'color', 'author_name', 'pic', 'sort_order',
             ]),
         ]);
     }
@@ -161,6 +161,7 @@ class BoardController extends Controller
                     'body' => $note['body'] ?? '',
                     'color' => $note['color'] ?? '#000000',
                     'author_name' => $note['author_name'] ?? 'Unknown',
+                    'pic' => $note['pic'] ?? null,
                     'sort_order' => $note['sort_order'] ?? 0,
                 ]);
             }
