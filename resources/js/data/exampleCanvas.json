@@ -1,31 +1,44 @@
 {
   "businessName": "Example: a subscription coffee delivery service",
   "notes": [
-    { "id": "ex-1", "section": "key_partners", "body": "Local coffee roasters", "color": "#4a3aa7", "author_name": "Example", "pos_x": 30, "pos_y": 30 },
-    { "id": "ex-2", "section": "key_partners", "body": "Courier/delivery network", "color": "#4a3aa7", "author_name": "Example", "pos_x": 65, "pos_y": 60 },
+    { "id": "ex-1", "section": "key_partners", "body": "Local single-origin roasters — supply the actual beans", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-2", "section": "key_partners", "body": "Regional courier network — weekly delivery logistics", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-3", "section": "key_partners", "body": "Subscription billing platform (e.g. Stripe) — recurring payments", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-3", "section": "key_activities", "body": "Roasting & packaging", "color": "#2a78d6", "author_name": "Example", "pos_x": 35, "pos_y": 35 },
-    { "id": "ex-4", "section": "key_activities", "body": "Subscription logistics", "color": "#2a78d6", "author_name": "Example", "pos_x": 60, "pos_y": 65 },
+    { "id": "ex-4", "section": "key_activities", "body": "Roasting & quality control", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-5", "section": "key_activities", "body": "Curating each month's box — tasting & sourcing new roasters", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-6", "section": "key_activities", "body": "Customer support & subscription management", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-5", "section": "key_resources", "body": "Roasting equipment", "color": "#1baf7a", "author_name": "Example", "pos_x": 30, "pos_y": 40 },
-    { "id": "ex-6", "section": "key_resources", "body": "Subscriber database", "color": "#1baf7a", "author_name": "Example", "pos_x": 65, "pos_y": 55 },
+    { "id": "ex-7", "section": "key_resources", "body": "Roasting equipment & production space", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-8", "section": "key_resources", "body": "Subscriber taste-profile database", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-9", "section": "key_resources", "body": "Brand, packaging design & courier contracts", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-7", "section": "value_propositions", "body": "Fresh beans delivered before you run out", "color": "#eb6834", "author_name": "Example", "pos_x": 50, "pos_y": 30 },
-    { "id": "ex-8", "section": "value_propositions", "body": "Discover new roasters every month", "color": "#eb6834", "author_name": "Example", "pos_x": 40, "pos_y": 65 },
+    { "id": "ex-10", "section": "value_propositions", "body": "Fresh beans delivered before you run out", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-11", "section": "value_propositions", "body": "Discover a new independent roaster every month", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-12", "section": "value_propositions", "body": "Recommendations tailored to your own taste profile", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-9", "section": "customer_relationships", "body": "Personal roast recommendations", "color": "#e87ba4", "author_name": "Example", "pos_x": 40, "pos_y": 30 },
-    { "id": "ex-10", "section": "customer_relationships", "body": "Community tasting events", "color": "#e87ba4", "author_name": "Example", "pos_x": 60, "pos_y": 60 },
+    { "id": "ex-13", "section": "customer_relationships", "body": "Personal roast recommendations via a short taste quiz", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-14", "section": "customer_relationships", "body": "Community tasting events, in-person & virtual", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-15", "section": "customer_relationships", "body": "Self-serve pause / skip / swap from your account", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-11", "section": "channels", "body": "Website & mobile app", "color": "#eda100", "author_name": "Example", "pos_x": 35, "pos_y": 35 },
-    { "id": "ex-12", "section": "channels", "body": "Instagram & word of mouth", "color": "#eda100", "author_name": "Example", "pos_x": 65, "pos_y": 60 },
+    { "id": "ex-16", "section": "channels", "body": "Website & mobile app — direct signup", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-17", "section": "channels", "body": "Instagram & word-of-mouth referrals", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-18", "section": "channels", "body": "Pop-up stalls at local weekend markets", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-13", "section": "customer_segments", "body": "Home coffee enthusiasts", "color": "#008300", "author_name": "Example", "pos_x": 35, "pos_y": 35 },
-    { "id": "ex-14", "section": "customer_segments", "body": "Small offices", "color": "#008300", "author_name": "Example", "pos_x": 65, "pos_y": 60 },
+    { "id": "ex-19", "section": "customer_segments", "body": "Home coffee enthusiasts", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-20", "section": "customer_segments", "body": "Small offices wanting quality coffee", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-21", "section": "customer_segments", "body": "Gift buyers — one-off boxes for birthdays etc.", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-15", "section": "revenue_streams", "body": "Monthly subscription fee", "color": "#e34948", "author_name": "Example", "pos_x": 35, "pos_y": 40 },
-    { "id": "ex-16", "section": "revenue_streams", "body": "One-off gift boxes", "color": "#e34948", "author_name": "Example", "pos_x": 65, "pos_y": 55 },
+    { "id": "ex-22", "section": "revenue_streams", "body": "Monthly subscription fee — the core recurring revenue", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-23", "section": "revenue_streams", "body": "One-off gift boxes", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-24", "section": "revenue_streams", "body": "Branded merchandise — grinders, mugs, filters", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
 
-    { "id": "ex-17", "section": "cost_structure", "body": "Green bean sourcing", "color": "#6b6a65", "author_name": "Example", "pos_x": 35, "pos_y": 40 },
-    { "id": "ex-18", "section": "cost_structure", "body": "Shipping & packaging", "color": "#6b6a65", "author_name": "Example", "pos_x": 65, "pos_y": 55 }
+    { "id": "ex-25", "section": "cost_structure", "body": "Green bean sourcing — cost of goods sold", "color": "#2a78d6", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-26", "section": "cost_structure", "body": "Shipping & packaging per box", "color": "#eb6834", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-27", "section": "cost_structure", "body": "Marketing & customer acquisition spend", "color": "#1baf7a", "author_name": "Jordan", "sort_order": 2 },
+
+    { "id": "ex-28", "section": "freeform", "body": "Open question: should we add a decaf-only tier?", "color": "#eda100", "author_name": "Alex", "sort_order": 0 },
+    { "id": "ex-29", "section": "freeform", "body": "Idea to explore: bulk plans for local offices", "color": "#e87ba4", "author_name": "Sam", "sort_order": 1 },
+    { "id": "ex-30", "section": "freeform", "body": "Reminder: revisit pricing once we hit 500 subscribers", "color": "#4a3aa7", "author_name": "Jordan", "sort_order": 2 }
   ]
 }

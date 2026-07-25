@@ -62,7 +62,14 @@ export function useCursorBroadcast({ channel, containerRef, cursorLayerRef, part
         nodesRef.current.set(data.id, node)
       }
 
-      node.style.transform = `translate(${data.x * 100}%, ${data.y * 100}%)`
+      // translate() percentages are relative to the CURSOR NODE's own size,
+      // not the container — a persistent bug where the cursor barely moved
+      // from the top-left corner regardless of the sender's real position.
+      // Converting to pixels against the RECEIVER's own container size (not
+      // the sender's) is what makes this correct across differently-sized
+      // viewports, which is the whole reason positions are sent as fractions.
+      const rect = container.getBoundingClientRect()
+      node.style.transform = `translate(${data.x * rect.width}px, ${data.y * rect.height}px)`
     }
 
     channel.listenForWhisper("cursor", applyPosition)

@@ -161,6 +161,59 @@ test("export downloads JSON including a freeform-section note", async ({ browser
   await hostCtx.close()
 })
 
+test("dragging a note from a section into the free-form area updates both browsers without reload", async ({ browser }) => {
+  const hostCtx = await browser.newContext()
+  const guestCtx = await browser.newContext()
+  const host = await hostCtx.newPage()
+  const guest = await guestCtx.newPage()
+
+  const pin = await startSessionAndGetPin(host)
+  await joinAsCurrentUser(host, "Host", COLORS.blue)
+  await joinBoard(guest, pin, "Guest", COLORS.orange)
+
+  await host.getByTestId("add-note-key_partners").click()
+  await host.getByTestId("add-note-textarea").fill("Move me to freeform")
+  await host.getByTestId("add-note-submit").click()
+  // Sections start collapsed once they hold a note — expand to make the
+  // card draggable (dnd-kit's useSortable can't target a hidden element).
+  await host.getByText("1 note").click()
+
+  const noteCard = host.getByTestId("note-card").filter({ hasText: "Move me to freeform" })
+  const noteBox = await noteCard.boundingBox()
+  const targetBox = await host.getByTestId("section-drop-freeform").boundingBox()
+  const startX = noteBox.x + noteBox.width / 2
+  const startY = noteBox.y + noteBox.height / 2
+  const endX = targetBox.x + targetBox.width / 2
+  const endY = targetBox.y + targetBox.height / 2
+
+  await host.mouse.move(startX, startY)
+  await host.mouse.down()
+  // A small nudge first to cross dnd-kit's activation-distance threshold,
+  // THEN one direct jump straight to the target — deliberately NOT a
+  // stepped sweep across the whole page. dnd-kit live-reflows the layout as
+  // the pointer passes near OTHER sections during a drag (correct, intended
+  // behavior), so a multi-step move along a long straight line ends up
+  // colliding with whatever section happens to be under the path partway
+  // through, not the original target's pre-drag coordinates.
+  await host.mouse.move(startX + 10, startY + 10)
+  await host.mouse.move(endX, endY)
+  await host.mouse.move(endX, endY) // second move at the same point registers a final pointer position for the drop
+  await host.mouse.up()
+
+  // Both browsers must reflect the move — the mover's own via the local
+  // optimistic state, the OTHER participant's purely via the
+  // NotesReordered broadcast, without any reload.
+  await expect(
+    host.getByTestId("section-drop-freeform").getByTestId("note-card").filter({ hasText: "Move me to freeform" }),
+  ).toBeVisible()
+  await expect(
+    guest.getByTestId("section-drop-freeform").getByTestId("note-card").filter({ hasText: "Move me to freeform" }),
+  ).toBeVisible()
+
+  await hostCtx.close()
+  await guestCtx.close()
+})
+
 test("host importing a fixture updates a connected participant's board via broadcast", async ({ browser }) => {
   const hostCtx = await browser.newContext()
   const guestCtx = await browser.newContext()

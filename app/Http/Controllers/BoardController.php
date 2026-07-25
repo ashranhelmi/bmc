@@ -51,9 +51,9 @@ class BoardController extends Controller
             // correctness guarantee is still the server-side transaction in
             // ParticipantController, not this hint.
             'takenColors' => $board->connectedParticipants()->pluck('color'),
-            'notes' => $board->is_started ? $board->notes()->get([
-                'id', 'section', 'body', 'color', 'author_name', 'pos_x', 'pos_y',
-            ]) : [],
+            'notes' => $board->is_started ? $board->notes()
+                ->orderBy('sort_order')
+                ->get(['id', 'section', 'body', 'color', 'author_name', 'sort_order']) : [],
         ]);
     }
 
@@ -129,8 +129,8 @@ class BoardController extends Controller
             'board_uuid' => $board->uuid,
             'is_locked' => $board->is_locked,
             'exported_at' => now()->toIso8601String(),
-            'notes' => $board->notes()->get([
-                'section', 'body', 'color', 'author_name', 'pos_x', 'pos_y',
+            'notes' => $board->notes()->orderBy('sort_order')->get([
+                'section', 'body', 'color', 'author_name', 'sort_order',
             ]),
         ]);
     }
@@ -159,8 +159,7 @@ class BoardController extends Controller
                     'body' => $note['body'] ?? '',
                     'color' => $note['color'] ?? '#000000',
                     'author_name' => $note['author_name'] ?? 'Unknown',
-                    'pos_x' => $note['pos_x'] ?? 0,
-                    'pos_y' => $note['pos_y'] ?? 0,
+                    'sort_order' => $note['sort_order'] ?? 0,
                 ]);
             }
 

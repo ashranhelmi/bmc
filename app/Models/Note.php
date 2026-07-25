@@ -17,13 +17,11 @@ class Note extends Model
         'color',
         'author_name',
         'participant_id',
-        'pos_x',
-        'pos_y',
+        'sort_order',
     ];
 
     protected $casts = [
-        'pos_x' => 'float',
-        'pos_y' => 'float',
+        'sort_order' => 'integer',
     ];
 
     public function board(): BelongsTo

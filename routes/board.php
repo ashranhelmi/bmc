@@ -27,5 +27,5 @@ Route::middleware('pin.verified')->group(function () {
 
 Route::middleware(['board.started', 'board.unlocked', 'is.participant'])->group(function () {
     Route::post('/board/notes', [NoteController::class, 'store'])->name('notes.store');
-    Route::patch('/board/notes/{note}/position', [NoteController::class, 'updatePosition'])->name('notes.update-position');
+    Route::post('/board/notes/reorder', [NoteController::class, 'reorder'])->name('notes.reorder');
 });

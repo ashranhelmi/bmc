@@ -9,8 +9,10 @@ import JoinPrompt from "./JoinPrompt"
 import BoardCanvas from "./BoardCanvas"
 import HostControls from "./HostControls"
 import ExportButton from "./ExportButton"
-import ExampleCanvasToggle from "./ExampleCanvasToggle"
 import PrintButton from "./PrintButton"
+import { Button } from "@/components/ui/button"
+import exampleData from "@/data/exampleCanvas.json"
+import { BookOpenIcon, XIcon } from "lucide-react"
 
 export default function Show({
   board,
@@ -34,6 +36,10 @@ export default function Show({
   // with Reverb completes. `.here()` firing is the real "you're subscribed"
   // signal, which is what a whisper actually depends on.
   const [presenceReady, setPresenceReady] = React.useState(false)
+  // Per-viewer local toggle, same pattern as section expand/collapse — not
+  // synced across participants, since it's non-destructive and only affects
+  // what's shown on this one screen.
+  const [viewingExample, setViewingExample] = React.useState(false)
   const containerRef = React.useRef(null)
   const cursorLayerRef = React.useRef(null)
   const wasStartedRef = React.useRef(board.isStarted)
@@ -64,7 +70,7 @@ export default function Show({
 
     const publicChannel = window.Echo.channel(`board.${board.id}`)
 
-    const upsertNote = ({ note }) => {
+    const upsertNote = (note) => {
       setNotes((prev) => {
         const idx = prev.findIndex((n) => n.id === note.id)
         if (idx === -1) return [...prev, note]
@@ -75,8 +81,8 @@ export default function Show({
     }
 
     publicChannel
-      .listen(".note.created", upsertNote)
-      .listen(".note.moved", upsertNote)
+      .listen(".note.created", ({ note }) => upsertNote(note))
+      .listen(".notes.reordered", ({ notes: changed }) => changed.forEach(upsertNote))
       .listen(".board.lock-toggled", ({ isLocked: locked }) => setIsLocked(locked))
       .listen(".board.started", () => router.reload())
       .listen(".board.imported", () => router.reload())
@@ -180,18 +186,33 @@ export default function Show({
             )}
           </div>
           <div className="flex items-center gap-2">
-            <ExampleCanvasToggle sections={sections} freeformKey={freeformKey} />
+            {!viewingExample && (
+              <Button variant="outline" size="sm" onClick={() => setViewingExample(true)}>
+                <BookOpenIcon /> See an example
+              </Button>
+            )}
             <ExportButton />
             {isLocked && <PrintButton />}
             {isHost && <HostControls isLocked={isLocked} />}
           </div>
         </header>
 
+        {viewingExample && (
+          <div className="flex items-center justify-between gap-2 border-b bg-accent/40 px-3 py-2 text-sm print:hidden">
+            <span>
+              Viewing example — <span className="text-muted-foreground">{exampleData.businessName}</span>
+            </span>
+            <Button size="sm" onClick={() => setViewingExample(false)}>
+              <XIcon /> Exit example
+            </Button>
+          </div>
+        )}
+
         <BoardCanvas
           sections={sections}
           freeformKey={freeformKey}
-          notes={notes}
-          readOnly={!participant || isLocked}
+          notes={viewingExample ? exampleData.notes : notes}
+          readOnly={viewingExample || !participant || isLocked}
           containerRef={containerRef}
           cursorLayerRef={cursorLayerRef}
         />

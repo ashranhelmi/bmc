@@ -1,23 +1,24 @@
 import * as React from "react"
-import { useDraggable } from "@dnd-kit/core"
+import { useSortable } from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { cn } from "@/lib/utils"
 
-// Free x/y positioning via @dnd-kit/core's useDraggable — deliberately not
-// the `sortable` preset (list-reorder only, used elsewhere in other
-// projects). pos_x/pos_y are percentages of the note's CURRENT container box
-// (a section or the freeform area), not raw pixels — different
-// participants' viewports differ in size.
-export default function NoteCard({ note, readOnly = false, style }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `note-${note.id}`,
-    data: { note },
+// A numbered list item within its section's SortableContext — not free
+// canvas positioning. Simpler to build reliably and easier to scan a
+// workshop's ideas than pixel-precise placement (see requirements
+// discussion, Session 2). The actively-dragged card is rendered separately
+// by BoardCanvas's DragOverlay, floating above every section — this
+// component just goes invisible-in-place (opacity) while that's happening.
+export default function NoteCard({ note, number, readOnly = false }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: note.id,
     disabled: readOnly,
   })
 
-  // Base centering (-50%, -50%) and the live drag delta both have to live in
-  // the SAME transform value — a Tailwind translate utility class would
-  // just get clobbered by the inline style below.
-  const dragDelta = transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : ""
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  }
 
   return (
     <div
@@ -26,21 +27,19 @@ export default function NoteCard({ note, readOnly = false, style }) {
       {...(readOnly ? {} : attributes)}
       data-testid="note-card"
       className={cn(
-        "absolute w-36 touch-none rounded-md p-2 text-xs shadow-md",
+        "flex touch-none items-start gap-2 rounded-md p-2 text-xs shadow-sm",
         !readOnly && "cursor-grab active:cursor-grabbing",
-        isDragging && "z-30 shadow-xl",
+        isDragging && "opacity-30",
       )}
-      style={{
-        left: `${note.pos_x}%`,
-        top: `${note.pos_y}%`,
-        backgroundColor: note.color,
-        color: "#fff",
-        transform: `translate(-50%, -50%) ${dragDelta}`,
-        ...style,
-      }}
+      style={{ ...style, backgroundColor: note.color, color: "#fff" }}
     >
-      <div className="mb-1 truncate text-[10px] font-semibold opacity-80">{note.author_name}</div>
-      <div className="line-clamp-4 break-words">{note.body}</div>
+      <span className="mt-0.5 shrink-0 rounded-full bg-black/20 px-1.5 py-0.5 text-[10px] font-bold tabular-nums">
+        {number}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="mb-0.5 truncate text-[10px] font-semibold opacity-80">{note.author_name}</div>
+        <div className="break-words">{note.body}</div>
+      </div>
     </div>
   )
 }

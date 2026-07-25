@@ -9,8 +9,7 @@
       "body": "Imported fixture note",
       "color": "#2a78d6",
       "author_name": "Fixture Author",
-      "pos_x": 40,
-      "pos_y": 40
+      "sort_order": 0
     }
   ]
 }

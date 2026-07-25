@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useDroppable } from "@dnd-kit/core"
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { useForm } from "@inertiajs/react"
 import { PlusIcon } from "lucide-react"
 import NoteCard from "./NoteCard"
@@ -11,6 +12,12 @@ import { cn } from "@/lib/utils"
  * Expand/collapse is local `useState`, deliberately NOT synced across
  * participants — one person expanding a section mid-workshop shouldn't yank
  * the view out from under everyone else looking at a different section.
+ *
+ * Notes are a numbered, ordered list (not free canvas positioning) — see
+ * requirements discussion, Session 2. Each section is its own SortableContext
+ * PLUS a droppable container (`useDroppable`), so dropping into an empty
+ * section or past the last item still resolves to the right container —
+ * the standard dnd-kit multi-container pattern.
  */
 export default function SectionStack({ sectionKey, section, notes, readOnly, isFreeform = false }) {
   const [expanded, setExpanded] = React.useState(isFreeform)
@@ -59,24 +66,30 @@ export default function SectionStack({ sectionKey, section, notes, readOnly, isF
 
       <div
         ref={setNodeRef}
+        data-testid={`section-drop-${sectionKey}`}
         className={cn(
           "relative flex-1",
           isOver && "bg-accent/40",
           !isExpanded && "flex items-center justify-center print:block",
         )}
       >
-        {/* Print always shows real note content regardless of each section's
-            own collapsed state — a printed artifact showing a stack preview
-            instead of the actual notes would defeat the point of printing. */}
+        {/* Print always shows the real numbered list regardless of each
+            section's own collapsed state — a printed artifact showing a
+            stack preview instead of actual notes would defeat the point. */}
         {!isExpanded && (
           <div className="print:hidden">
             <StackPreview notes={notes} onClick={() => setExpanded(true)} />
           </div>
         )}
-        <div className={cn(!isExpanded ? "hidden print:contents" : "contents")}>
-          {notes.map((note) => (
-            <NoteCard key={note.id} note={note} readOnly={readOnly} />
-          ))}
+        <div className={cn("flex flex-col gap-1.5 p-2", !isExpanded ? "hidden print:flex" : "flex")}>
+          <SortableContext
+            items={notes.map((n) => n.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {notes.map((note, i) => (
+              <NoteCard key={note.id} note={note} number={i + 1} readOnly={readOnly} />
+            ))}
+          </SortableContext>
           {!readOnly && (
             <div className="print:hidden">
               <AddNoteButton sectionKey={sectionKey} />
@@ -95,14 +108,7 @@ function AddNoteButton({ sectionKey }) {
   function submit(e) {
     e.preventDefault()
     if (!data.body.trim()) return
-    // Small random offset so notes added back-to-back don't sit exactly on
-    // top of each other before anyone drags them apart.
-    transform((formData) => ({
-      ...formData,
-      section: sectionKey,
-      pos_x: 30 + Math.random() * 40,
-      pos_y: 30 + Math.random() * 40,
-    }))
+    transform((formData) => ({ ...formData, section: sectionKey }))
     post(route("notes.store"), {
       onSuccess: () => {
         reset()
@@ -118,7 +124,6 @@ function AddNoteButton({ sectionKey }) {
         type="button"
         size="sm"
         variant="secondary"
-        className="absolute bottom-2 left-2"
         onClick={() => setOpen(true)}
         data-testid={`add-note-${sectionKey}`}
       >
@@ -128,10 +133,7 @@ function AddNoteButton({ sectionKey }) {
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="absolute bottom-2 left-2 flex w-48 flex-col gap-1.5 rounded-md border bg-card p-2 shadow-lg"
-    >
+    <form onSubmit={submit} className="flex flex-col gap-1.5 rounded-md border bg-card p-2 shadow-sm">
       <textarea
         autoFocus
         maxLength={500}
@@ -179,6 +181,9 @@ function StackPreview({ notes, onClick }) {
           }}
         />
       ))}
+      <span className="absolute -top-1.5 -right-1.5 z-10 flex size-5 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background">
+        {notes.length}
+      </span>
     </button>
   )
 }

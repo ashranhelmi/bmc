@@ -31,8 +31,6 @@ class NoteTest extends TestCase
         $response = $this->post('/board/notes', [
             'section' => 'key_partners',
             'body' => 'A partner idea',
-            'pos_x' => 40,
-            'pos_y' => 50,
         ]);
 
         $response->assertSessionHasNoErrors();
@@ -44,6 +42,20 @@ class NoteTest extends TestCase
         ]);
     }
 
+    public function test_notes_are_appended_to_the_end_of_their_section_in_creation_order(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->joinedSession($board);
+
+        $this->post('/board/notes', ['section' => 'key_partners', 'body' => 'first'])
+            ->assertSessionHasNoErrors();
+        $this->post('/board/notes', ['section' => 'key_partners', 'body' => 'second'])
+            ->assertSessionHasNoErrors();
+
+        $notes = Note::where('board_id', $board->id)->orderBy('sort_order')->pluck('body');
+        $this->assertSame(['first', 'second'], $notes->all());
+    }
+
     public function test_creating_a_note_requires_a_joined_participant(): void
     {
         $board = Board::factory()->started()->create();
@@ -52,8 +64,6 @@ class NoteTest extends TestCase
         $response = $this->post('/board/notes', [
             'section' => 'key_partners',
             'body' => 'Should be rejected',
-            'pos_x' => 40,
-            'pos_y' => 50,
         ]);
 
         $response->assertForbidden();
@@ -67,8 +77,6 @@ class NoteTest extends TestCase
         $response = $this->post('/board/notes', [
             'section' => 'key_partners',
             'body' => 'Too late',
-            'pos_x' => 40,
-            'pos_y' => 50,
         ]);
 
         $response->assertForbidden();
@@ -83,8 +91,6 @@ class NoteTest extends TestCase
         $this->post('/board/notes', [
             'section' => 'key_partners',
             'body' => 'Persisted color',
-            'pos_x' => 40,
-            'pos_y' => 50,
         ])->assertSessionHasNoErrors();
 
         // Participant disconnects and their color gets reassigned to someone
@@ -96,21 +102,57 @@ class NoteTest extends TestCase
         $this->assertSame($originalColor, $note->color);
     }
 
-    public function test_moving_a_note_across_sections_updates_its_section(): void
+    public function test_reorder_moves_a_note_across_sections_and_reindexes_both(): void
     {
         $board = Board::factory()->started()->create();
         $this->joinedSession($board);
-        $note = Note::factory()->for($board)->create(['section' => 'key_partners']);
+        $moved = Note::factory()->for($board)->create(['section' => 'key_partners', 'sort_order' => 0]);
+        $staysBehind = Note::factory()->for($board)->create(['section' => 'key_partners', 'sort_order' => 1]);
+        $alreadyInFreeform = Note::factory()->for($board)->create(['section' => 'freeform', 'sort_order' => 0]);
 
-        $response = $this->patch("/board/notes/{$note->id}/position", [
-            'pos_x' => 70,
-            'pos_y' => 20,
-            'section' => 'freeform',
+        $response = $this->post('/board/notes/reorder', [
+            'sections' => [
+                'key_partners' => [$staysBehind->id],
+                'freeform' => [$alreadyInFreeform->id, $moved->id],
+            ],
         ]);
 
         $response->assertSessionHasNoErrors();
-        $note->refresh();
-        $this->assertSame('freeform', $note->section);
-        $this->assertSame(70.0, $note->pos_x);
+
+        $moved->refresh();
+        $staysBehind->refresh();
+        $alreadyInFreeform->refresh();
+
+        $this->assertSame('freeform', $moved->section);
+        $this->assertSame(1, $moved->sort_order);
+        $this->assertSame('key_partners', $staysBehind->section);
+        $this->assertSame(0, $staysBehind->sort_order, 'left-behind sibling should be reindexed to close the gap');
+        $this->assertSame(0, $alreadyInFreeform->sort_order);
+    }
+
+    public function test_reorder_rejects_an_unknown_section_key(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->joinedSession($board);
+        $note = Note::factory()->for($board)->create();
+
+        $response = $this->post('/board/notes/reorder', [
+            'sections' => ['not_a_real_section' => [$note->id]],
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_reorder_requires_a_joined_participant(): void
+    {
+        $board = Board::factory()->started()->create();
+        $this->withSession(['pin_verified_board_id' => $board->id]);
+        $note = Note::factory()->for($board)->create(['section' => 'key_partners']);
+
+        $response = $this->post('/board/notes/reorder', [
+            'sections' => ['key_partners' => [$note->id]],
+        ]);
+
+        $response->assertForbidden();
     }
 }
