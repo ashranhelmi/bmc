@@ -17,6 +17,10 @@ await page.screenshot({ path: `${OUT}/share-session.png` });
 // Continue into the board
 await page.getByRole('button', { name: /continue/i }).click();
 await page.waitForSelector('[data-testid="board-page"]');
+await page.waitForTimeout(500);
+
+// Empty board — capture before "See an example" adds any notes
+await page.screenshot({ path: `${OUT}/board-empty.png`, fullPage: true });
 
 // See an example -> populated canvas
 await page.getByRole('button', { name: /see an example/i }).click();
