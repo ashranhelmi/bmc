@@ -77,3 +77,16 @@ REVERB_PID=$!
 sleep 2
 
 open "http://localhost:8000"
+
+# Critical: do NOT let this script exit here. macOS treats "Start BMC.app"
+# quitting (its top-level process exiting) as the app having quit, and
+# cleans up its whole process group - nohup only ignores SIGHUP, it does
+# NOT fully detach from that group, so the server/reverb children were
+# getting silently killed within seconds of launch even though they were
+# spawned correctly (caught via a real user's browser never connecting,
+# then reproduced and traced directly: process alive at spawn, gone 3s
+# later). macOS has no `setsid` command to properly detach instead, so the
+# fix is to just keep this script alive for as long as BMC should be
+# running - Stop BMC.app killing these two PIDs is what ends this wait and
+# lets this process exit naturally.
+wait "$SERVER_PID" "$REVERB_PID"
