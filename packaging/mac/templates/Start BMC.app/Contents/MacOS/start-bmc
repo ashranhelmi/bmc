@@ -22,6 +22,16 @@ fail() {
 [ -x "$PHP_BIN" ] || fail "Could not find the app's PHP runtime.\nExpected: $PHP_BIN\n\nTry re-downloading BMC."
 [ -f "$APP_DIR/artisan" ] || fail "Could not find the app files.\nExpected: $APP_DIR/artisan\n\nTry re-downloading BMC."
 
+# A quarantined-but-executable binary passes the -x check above but still
+# gets silently SIGKILLed by macOS the moment it actually runs, with nothing
+# written anywhere to explain why - caught a real user hitting exactly this
+# after clearing quarantine on only the two .app files, not the whole
+# folder. Catch it here with an actionable message instead of a dead
+# browser tab and no clue what happened.
+if ! "$PHP_BIN" -v >/dev/null 2>&1; then
+    fail "macOS is blocking BMC's bundled PHP program from running (this is separate from the app icons themselves).\n\nOpen Terminal, then run:\ncd \"$DIR\"\nxattr -cr .\n\nThen try Start BMC again."
+fi
+
 mkdir -p "$STATE_DIR"
 
 # Already running? Don't start a second copy - just reopen the browser.
