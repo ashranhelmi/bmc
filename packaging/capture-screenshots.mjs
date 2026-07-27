@@ -10,11 +10,12 @@ await page.goto('http://localhost:8000/');
 // Not-started screen -> Start Session
 await page.getByRole('button', { name: /start session/i }).click();
 
-// Share screen (PIN/QR) - tight crop on just the QR/PIN card itself, not
-// the full mostly-empty viewport, so it's actually legible at landing-page
-// thumbnail size.
+// Share screen (PIN/QR) - full viewport, not a tight element crop. The
+// landing page zooms into this via CSS (object-fit: cover + scale), which
+// reads cleaner than a hard-cropped screenshot with its own border/shadow
+// nested inside the card's border/shadow.
 await page.waitForTimeout(800);
-await page.locator('[data-testid="session-pin"]').locator('xpath=ancestor::div[contains(@class,"gap-4") and contains(@class,"pt-6")]/..').screenshot({ path: `${OUT}/share-session.png` });
+await page.screenshot({ path: `${OUT}/share-session.png` });
 
 // Continue into the board
 await page.getByRole('button', { name: /continue/i }).click();
@@ -29,11 +30,11 @@ await page.getByRole('button', { name: /see an example/i }).click();
 await page.waitForTimeout(500);
 await page.screenshot({ path: `${OUT}/board-canvas.png`, fullPage: true });
 
-// BMC framework guide dialog - tight crop on just the dialog box, not the
-// full dimmed viewport behind it, so the diagram is actually readable.
+// BMC framework guide dialog - full viewport, zoomed via CSS on the landing
+// page same as share-session.png above.
 await page.locator('[data-testid="bmc-guide-open"]').click();
 await page.waitForTimeout(500);
-await page.locator('.max-w-5xl').screenshot({ path: `${OUT}/guide-diagram.png` });
+await page.screenshot({ path: `${OUT}/guide-diagram.png` });
 await page.keyboard.press('Escape');
 
 await browser.close();
