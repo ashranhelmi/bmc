@@ -8,11 +8,13 @@ An interactive, multiplayer Business Model Canvas tool for live, in-person works
 
 ## Not a Developer? Just Want to Run a Workshop?
 
-Download the ready-to-run Windows build — no PHP, Node, or Composer needed on your machine.
+Download the ready-to-run build for your platform — no PHP, Node, or Composer needed on your machine.
 
-**[⬇ Download BMC-Windows.zip](https://github.com/ashranhelmi/bmc/releases/latest/download/BMC-Windows.zip)** · [Full setup guide →](https://gvapp.sitemys.com/bmc/content/setup-guide)
+**[⬇ Windows](https://github.com/ashranhelmi/bmc/releases/latest/download/BMC-Windows.zip)** · **[⬇ Mac](https://github.com/ashranhelmi/bmc/releases/latest/download/BMC-Mac.zip)** · [Full setup guide →](https://gvapp.sitemys.com/bmc/content/setup-guide)
 
-Extract the zip and double-click `Start BMC.vbs` — your browser opens automatically. Everyone else on the same WiFi joins with a PIN or QR code. A macOS build isn't packaged yet.
+Extract the zip and double-click `Start BMC.vbs` (Windows) or `Start BMC.app` (Mac) — your browser opens automatically. Everyone else on the same WiFi joins with a PIN or QR code.
+
+> On Mac, the app is unsigned, so macOS blocks it by default on first launch. Run `xattr -cr "Start BMC.app" "Stop BMC.app"` once in Terminal from the extracted folder — full details in the setup guide.
 
 > ⚠️ **This is a LAN-only tool, built to be reachable by whoever's in the room — nothing more.** Only run it on a WiFi network you trust (home, office, or a personal hotspot), and never port-forward it or deploy it to a public server. It has no TLS and only a 6-digit PIN gating access, which is fine for a private workshop and not fine for the open internet.
 
@@ -46,9 +48,9 @@ composer run board    # serves on 0.0.0.0 so other devices on your LAN can reach
 
 Then open `http://localhost:8000`. Use `composer run dev` instead of `composer run board` for hot-reload during active development (binds to `localhost` only — not reachable from other LAN devices).
 
-### Windows packaging
+### Packaging (Windows / Mac)
 
-The self-contained Windows build is produced by `packaging/windows/build.sh` (run on macOS/Linux) — it downloads a portable PHP runtime, builds production assets, and assembles a zip with hidden `.vbs` launchers. See that script for details if you want to build your own release.
+`packaging/windows/build.sh` and `packaging/mac/build.sh` each produce a self-contained zip with a portable/static PHP runtime, production assets, and hidden double-click launchers (`.vbs`/`.app`). The Mac build compiles its own static PHP binary locally on first run (via [static-php-cli](https://github.com/crazywhalecc/static-php-cli), ~4 minutes, cached after) — see that script for the exact extensions and known gotchas (mbstring's mbregex is disabled by default upstream, worked around with a narrow polyfill; `artisan serve` drops CLI flags in its child process, worked around with `PHPRC` + `--no-reload`).
 
 ## License
 
