@@ -26,3 +26,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Windows packaging - generated build output and downloaded binaries, not source.
+# packaging/windows/templates/ (the actual VBS/bat/php.ini sources) stays tracked.
+/packaging/windows/dist-root
+/packaging/windows/php-runtime
+/packaging/windows/.build-tmp
+/packaging/windows/*.zip
