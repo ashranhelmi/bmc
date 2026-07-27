@@ -1,209 +1,55 @@
-# Laravel Shadcn Base Template
+# BMC — Live Multiplayer Business Model Canvas
 
-A production-ready Laravel 12 starter template with Inertia.js, React, Tailwind CSS v4, and shadcn/ui — built as a reusable base for future projects.
+An interactive, multiplayer Business Model Canvas tool for live, in-person workshops. Participants join over the same WiFi, see each other's cursors move in real time (Figma-style), and collaboratively fill in the real Osterwalder 9-block canvas together — no accounts, no cloud.
 
-## Stack
+**Live site:** [gvapp.sitemys.com/bmc](https://gvapp.sitemys.com/bmc/) · **Setup guide:** [gvapp.sitemys.com/bmc/content/setup-guide](https://gvapp.sitemys.com/bmc/content/setup-guide)
 
-- **Laravel 12** — PHP 8.4
-- **Inertia.js** — SPA routing without an API
-- **React 19** — Frontend framework
-- **Vite** — Asset bundling
-- **Tailwind CSS v4** — Utility-first CSS
-- **shadcn/ui** — Unstyled, accessible component library
-- **Laravel Sail** — Docker-based local development
+![Board canvas](https://gvapp.sitemys.com/bmc/assets/screenshots/board-canvas.png)
+
+## Not a Developer? Just Want to Run a Workshop?
+
+Download the ready-to-run Windows build — no PHP, Node, or Composer needed on your machine.
+
+**[⬇ Download BMC-Windows.zip](https://github.com/ashranhelmi/bmc/releases/latest/download/BMC-Windows.zip)** · [Full setup guide →](https://gvapp.sitemys.com/bmc/content/setup-guide)
+
+Extract the zip and double-click `Start BMC.vbs` — your browser opens automatically. Everyone else on the same WiFi joins with a PIN or QR code. A macOS build isn't packaged yet.
+
+> ⚠️ **This is a LAN-only tool, built to be reachable by whoever's in the room — nothing more.** Only run it on a WiFi network you trust (home, office, or a personal hotspot), and never port-forward it or deploy it to a public server. It has no TLS and only a 6-digit PIN gating access, which is fine for a private workshop and not fine for the open internet.
 
 ## Features
 
-- Collapsible sidebar with active nav highlight
-- Dark mode toggle (follows system preference, manual override saved to localStorage)
-- Full auth flow — Login, Register, Forgot Password, Reset Password, Confirm Password, Email Verification
-- User profile — Update info, change password, delete account
-- Toast notifications wired to Laravel flash messages (Sonner)
-- Error pages — 403, 404, 500 (theme-aware)
-- Breadcrumb navigation
-- Page transition progress bar
-- User dropdown with profile, billing, notifications, dark mode toggle, logout
+- **Live multiplayer canvas** — real-time cursors and note sync via Laravel Reverb
+- **The real BMC grid** — the actual Osterwalder 9-block layout, grouped into Supply/Value/Demand/Financial zones
+- **Join with a PIN or QR code** — no accounts, no sign-up
+- **Interactive framework guide** — click any block in the built-in diagram to see what it's for
+- **PIC / assigned-to tags** — separate from authorship, for tracking follow-up ownership
+- **Host controls** — Lock (freeze + enable printing), Export (JSON snapshot), Import, Reset
+- **Print export** — clean A4 landscape PDF once the board is locked
 
-## Requirements
+## Stack
 
-- Docker Desktop
-- Node.js & npm (for local frontend dev)
-- No local PHP required (uses Laravel Sail)
+- **Laravel 12** + **Inertia v2** + **React 19** + **Tailwind v4** + **shadcn/ui**
+- **Laravel Reverb** — self-hosted WebSocket server for realtime sync
+- **SQLite** — zero-friction local database, no MySQL/Sail setup needed
+- **@dnd-kit/sortable** — cross-section drag-and-drop for notes
 
-## Installation
+No accounts/auth system — participants are identified via plain session values (name, color, host flag), not a login flow.
 
-### 1. Clone the repo
+## Developer Setup
+
 ```bash
-git clone https://github.com/ashranhelmi/laravel-shadcn-base.git
-cd laravel-shadcn-base
+git clone https://github.com/ashranhelmi/bmc.git
+cd bmc
+composer run setup    # composer install, .env, app key, sqlite db, migrate, npm install, build
+composer run board    # serves on 0.0.0.0 so other devices on your LAN can reach it
 ```
 
-### 2. Copy environment file
-```bash
-cp .env.example .env
-```
+Then open `http://localhost:8000`. Use `composer run dev` instead of `composer run board` for hot-reload during active development (binds to `localhost` only — not reachable from other LAN devices).
 
-### 3. Install PHP dependencies via Docker
-```bash
-docker run --rm \
-    -u "$(id -u):$(id -g)" \
-    -v "$(pwd):/var/www/html" \
-    -w /var/www/html \
-    laravelsail/php84-composer:latest \
-    composer install --ignore-platform-reqs
-```
+### Windows packaging
 
-### 4. Start Sail
-```bash
-./vendor/bin/sail up -d
-```
-
-### 5. Generate app key
-```bash
-./vendor/bin/sail artisan key:generate
-```
-
-### 6. Run migrations
-```bash
-./vendor/bin/sail artisan migrate
-```
-
-### 7. Install Node dependencies
-```bash
-npm install
-```
-
-### 8. Start the dev server
-```bash
-npm run dev
-```
-
-### 9. Visit the app
-```
-http://localhost
-```
-
-## Adding shadcn Components
-```bash
-npx shadcn@latest add button
-npx shadcn@latest add card
-# etc.
-```
-
-Browse all components at [ui.shadcn.com/components](https://ui.shadcn.com/components).
-
-## Flash Messages (Toast)
-
-In any Laravel controller or route:
-```php
-return redirect('/dashboard')->with('success', 'Saved successfully.');
-return redirect()->back()->with('error', 'Something went wrong.');
-return redirect()->back()->with('warning', 'Please verify your email.');
-return redirect()->back()->with('info', 'Your session will expire soon.');
-```
-
-Manual toast in JSX:
-```jsx
-import { toast } from 'sonner'
-
-toast.success('Done!')
-toast.error('Failed.')
-```
-
-## Project Structure
-```
-resources/js/
-├── Layouts/
-│   ├── AuthenticatedLayout.jsx   # Bridges Breeze routes to AppLayout
-│   └── GuestLayout.jsx           # Centered card layout for auth pages
-├── Pages/
-│   ├── Auth/
-│   │   ├── ConfirmPassword.jsx
-│   │   ├── ForgotPassword.jsx
-│   │   ├── Login.jsx
-│   │   ├── Register.jsx
-│   │   ├── ResetPassword.jsx
-│   │   └── VerifyEmail.jsx
-│   ├── Profile/
-│   │   ├── Edit.jsx
-│   │   └── Partials/
-│   │       ├── DeleteUserForm.jsx
-│   │       ├── UpdatePasswordForm.jsx
-│   │       └── UpdateProfileInformationForm.jsx
-│   ├── Dashboard.jsx
-│   └── Welcome.jsx
-├── components/
-│   ├── layout/
-│   │   ├── AppHeader.jsx         # Top bar with sidebar trigger and breadcrumbs
-│   │   └── AppLayout.jsx         # Main authenticated layout with sidebar
-│   ├── ui/                       # shadcn/ui components
-│   │   ├── avatar.jsx
-│   │   ├── badge.jsx
-│   │   ├── breadcrumb.jsx
-│   │   ├── button.jsx
-│   │   ├── card.jsx
-│   │   ├── chart.jsx
-│   │   ├── checkbox.jsx
-│   │   ├── collapsible.jsx
-│   │   ├── dialog.jsx
-│   │   ├── drawer.jsx
-│   │   ├── dropdown-menu.jsx
-│   │   ├── input.jsx
-│   │   ├── label.jsx
-│   │   ├── select.jsx
-│   │   ├── separator.jsx
-│   │   ├── sheet.jsx
-│   │   ├── sidebar.jsx
-│   │   ├── skeleton.jsx
-│   │   ├── sonner.jsx
-│   │   ├── table.jsx
-│   │   ├── tabs.jsx
-│   │   ├── toggle-group.jsx
-│   │   ├── toggle.jsx
-│   │   └── tooltip.jsx
-│   ├── AppToaster.jsx            # Theme-aware Sonner toast wrapper
-│   ├── app-sidebar.jsx           # Sidebar with nav data
-│   ├── nav-main.jsx              # Sidebar nav with collapsible groups and active highlight
-│   └── nav-user.jsx              # User dropdown with dark mode toggle and logout
-├── hooks/
-│   ├── use-mobile.js             # Detects mobile viewport
-│   ├── useFlash.js               # Reads Laravel flash messages and triggers toasts
-│   └── useTheme.js               # Dark mode toggle with localStorage persistence
-├── lib/
-│   └── utils.js                  # cn() utility for merging Tailwind classes
-├── app.jsx                       # Inertia app entry point
-└── bootstrap.js                  # Axios setup
-```
-
-## Dark Mode
-
-Dark mode is toggled via the user dropdown menu in the sidebar footer. The preference is saved to `localStorage` and applied on page load. System preference is used as the default when no manual override exists.
+The self-contained Windows build is produced by `packaging/windows/build.sh` (run on macOS/Linux) — it downloads a portable PHP runtime, builds production assets, and assembles a zip with hidden `.vbs` launchers. See that script for details if you want to build your own release.
 
 ## License
 
 MIT
-
-## Notes
-
-### Laravel Breeze
-This template is built on top of Laravel Breeze (Inertia + React stack). The default Breeze UI components have been fully replaced with shadcn/ui. Do not re-run `php artisan breeze:install` as it will overwrite the customised files.
-
-### Laravel Sail Alias
-To avoid typing `./vendor/bin/sail` every time, add this alias to your shell:
-```bash
-alias sail='./vendor/bin/sail'
-```
-
-Then you can just run `sail up -d`, `sail artisan migrate` etc.
-
-### tsconfig.json
-A `tsconfig.json` is included at the project root even though this project uses `.jsx` (not TypeScript). This is required for the shadcn CLI to correctly resolve the `@` path alias when adding new components. Do not delete it.
-
-### Adding shadcn Components
-The `components.json` is configured with:
-- **Style**: `new-york`
-- **Base color**: `neutral`
-- **Path alias**: `@` → `resources/js`
-- **Components path**: `@/components/ui`
-
-When adding new components via CLI, files will be placed in `resources/js/components/ui/` automatically.
