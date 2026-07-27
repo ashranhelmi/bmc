@@ -1,0 +1,31 @@
+#!/bin/bash
+# Stop BMC - kills only the two processes this app started (by PID),
+# never a blanket "kill all php" - other apps on the same Mac are untouched.
+
+set -u
+
+DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+STATE_DIR="$DIR/state"
+PID_FILE="$STATE_DIR/pids.txt"
+
+notify() {
+    osascript -e "display dialog \"$1\" with title \"BMC\" buttons {\"OK\"} default button 1 with icon note" >/dev/null 2>&1
+}
+
+stopped_any=false
+
+if [ -f "$PID_FILE" ]; then
+    while IFS= read -r pid; do
+        if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+            kill "$pid" 2>/dev/null
+            stopped_any=true
+        fi
+    done < "$PID_FILE"
+    rm -f "$PID_FILE"
+fi
+
+if [ "$stopped_any" = true ]; then
+    notify "BMC has been stopped."
+else
+    notify "BMC wasn't running."
+fi

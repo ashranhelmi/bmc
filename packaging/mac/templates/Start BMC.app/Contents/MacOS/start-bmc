@@ -1,0 +1,69 @@
+#!/bin/bash
+# Start BMC - double-click entry point for non-technical users.
+# No Terminal window ever appears (LSUIElement in Info.plist + no TTY
+# allocation here). Boots the web server + realtime server in the
+# background, then opens the browser.
+
+set -u
+
+# Resolve the distribution root: Contents/MacOS -> Contents -> Start BMC.app -> root
+DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+PHP_BIN="$DIR/php-runtime/php"
+PHP_INI="$DIR/php-runtime/php.ini"
+APP_DIR="$DIR/app"
+STATE_DIR="$DIR/state"
+PID_FILE="$STATE_DIR/pids.txt"
+
+fail() {
+    osascript -e "display dialog \"$1\" with title \"BMC could not start\" buttons {\"OK\"} default button 1 with icon caution" >/dev/null 2>&1
+    exit 1
+}
+
+[ -x "$PHP_BIN" ] || fail "Could not find the app's PHP runtime.\nExpected: $PHP_BIN\n\nTry re-downloading BMC."
+[ -f "$APP_DIR/artisan" ] || fail "Could not find the app files.\nExpected: $APP_DIR/artisan\n\nTry re-downloading BMC."
+
+mkdir -p "$STATE_DIR"
+
+# Already running? Don't start a second copy - just reopen the browser.
+if [ -f "$PID_FILE" ]; then
+    already_running=false
+    while IFS= read -r pid; do
+        [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null && already_running=true
+    done < "$PID_FILE"
+    if [ "$already_running" = true ]; then
+        open "http://localhost:8000"
+        exit 0
+    fi
+fi
+
+cd "$APP_DIR" || fail "Could not enter the app folder."
+
+# `php artisan serve` internally re-execs itself as a fresh `php -S ...`
+# subprocess (Illuminate\Foundation\Console\ServeCommand::serverCommand()) -
+# that child gets NONE of the -c/-d flags passed to the parent, and only
+# inherits a small fixed allowlist of env vars (not PHPRC) unless
+# --no-reload is passed. So: generate a fully-resolved php.ini (with an
+# absolute auto_prepend_file path, only knowable at launch time since the
+# user could extract this app anywhere) into state/, point PHPRC at it, and
+# use --no-reload so PHPRC survives into the child process too.
+RESOLVED_INI="$STATE_DIR/php.resolved.ini"
+{
+    cat "$PHP_INI"
+    echo "auto_prepend_file = \"$DIR/php-runtime/mb_split-polyfill.php\""
+} > "$RESOLVED_INI"
+
+export PHPRC="$RESOLVED_INI"
+
+nohup "$PHP_BIN" -c "$RESOLVED_INI" artisan serve --host=0.0.0.0 --port=8000 --no-reload \
+    > "$STATE_DIR/server.log" 2>&1 &
+SERVER_PID=$!
+
+nohup "$PHP_BIN" -c "$RESOLVED_INI" artisan reverb:start --host=0.0.0.0 \
+    > "$STATE_DIR/reverb.log" 2>&1 &
+REVERB_PID=$!
+
+{ echo "$SERVER_PID"; echo "$REVERB_PID"; } > "$PID_FILE"
+
+sleep 2
+
+open "http://localhost:8000"

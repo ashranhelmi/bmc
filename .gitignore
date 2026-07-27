@@ -33,3 +33,11 @@ Thumbs.db
 /packaging/windows/php-runtime
 /packaging/windows/.build-tmp
 /packaging/windows/*.zip
+
+# Mac packaging - generated build output and the locally-compiled static PHP
+# binary, not source. packaging/mac/templates/ stays tracked.
+/packaging/mac/dist-root
+/packaging/mac/php-runtime
+/packaging/mac/spc-build
+/packaging/mac/.build-tmp
+/packaging/mac/*.zip
