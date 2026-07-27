@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="10%" y1="0%" x2="90%" y2="100%">
+      <stop offset="0%" stop-color="#14123B"/>
+      <stop offset="45%" stop-color="#241F6B"/>
+      <stop offset="100%" stop-color="#3730A3"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#g)"/>
+  <text x="32" y="45" text-anchor="middle" font-family="'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" font-weight="800" font-size="38" fill="#ffffff">B</text>
+</svg>
