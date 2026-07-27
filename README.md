@@ -14,7 +14,7 @@ Download the ready-to-run build for your platform — no PHP, Node, or Composer 
 
 Extract the zip and double-click `Start BMC.vbs` (Windows) or `Start BMC.app` (Mac) — your browser opens automatically. Everyone else on the same WiFi joins with a PIN or QR code.
 
-> On Mac, the app is unsigned, so macOS blocks it by default on first launch. Run `xattr -cr .` once in Terminal from *inside* the extracted folder (not just on the two `.app` files — the bundled PHP binary needs clearing too, or it silently fails to start) — full details in the setup guide.
+> On Mac, two one-time steps: (1) move the extracted `BMC-Mac` folder out of Downloads/Desktop/Documents first — macOS blocks apps from reading their own files in those three folders specifically, and it fails silently otherwise. (2) The app is also unsigned, so run `xattr -cr .` once in Terminal from *inside* the folder's new location (not just on the two `.app` files — the bundled PHP binary needs clearing too). Full details in the setup guide.
 
 > ⚠️ **This is a LAN-only tool, built to be reachable by whoever's in the room — nothing more.** Only run it on a WiFi network you trust (home, office, or a personal hotspot), and never port-forward it or deploy it to a public server. It has no TLS and only a 6-digit PIN gating access, which is fine for a private workshop and not fine for the open internet.
 
