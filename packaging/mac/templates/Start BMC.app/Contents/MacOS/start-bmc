@@ -6,7 +6,6 @@
 
 set -u
 
-# Resolve the distribution root: Contents/MacOS -> Contents -> Start BMC.app -> root
 DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
 PHP_BIN="$DIR/php-runtime/php"
 PHP_INI="$DIR/php-runtime/php.ini"
@@ -15,19 +14,42 @@ STATE_DIR="$DIR/state"
 PID_FILE="$STATE_DIR/pids.txt"
 
 fail() {
-    osascript -e "display dialog \"$1\" with title \"BMC could not start\" buttons {\"OK\"} default button 1 with icon caution" >/dev/null 2>&1
+    # Escape embedded double-quotes for AppleScript's own string syntax -
+    # a message containing a literal quote (e.g. quoting a folder name)
+    # would otherwise silently break the osascript call's parsing, and
+    # since its own errors are redirected to /dev/null below, the failure
+    # would be completely invisible: no dialog, no log, script just exits.
+    local escaped="${1//\"/\\\"}"
+    osascript -e "display dialog \"$escaped\" with title \"BMC could not start\" buttons {\"OK\"} default button 1 with icon caution" >/dev/null 2>&1
     exit 1
 }
+
+# macOS's TCC privacy protection blocks background/headless apps from
+# reading files inside Desktop, Documents, and Downloads - confirmed
+# directly on a real user's machine: bash's own `ls`/`cd` succeed there,
+# but the bundled PHP binary opening that exact same file fails silently
+# (relative, ./, and fully-absolute paths all fail identically), with no
+# error dialog and nothing written anywhere. Tried working around this by
+# auto-copying to ~/Library/Application Support on launch - the copy step
+# itself hit the same block (rsync/cp are equally unrecognized background
+# processes), and removing LSUIElement (in case the lack of a visible
+# window was suppressing the permission prompt) made no difference either -
+# the block applies before any prompt would even fire. Since there's no
+# way to detect-and-silently-fix this from inside the app, check for it
+# explicitly and tell the user exactly what to do instead of failing with
+# a confusing "could not find artisan" or a browser that never connects.
+case "$DIR" in
+    "$HOME/Downloads"*|"$HOME/Desktop"*|"$HOME/Documents"*)
+        fail "BMC can't run from this folder.\n\nmacOS blocks apps like this from reading files inside Downloads, Desktop, or Documents. Move the whole \"$(basename "$DIR")\" folder somewhere else first - your Home folder or Applications both work - then double-click Start BMC again from its new location."
+        ;;
+esac
 
 [ -x "$PHP_BIN" ] || fail "Could not find the app's PHP runtime.\nExpected: $PHP_BIN\n\nTry re-downloading BMC."
 [ -f "$APP_DIR/artisan" ] || fail "Could not find the app files.\nExpected: $APP_DIR/artisan\n\nTry re-downloading BMC."
 
 # A quarantined-but-executable binary passes the -x check above but still
 # gets silently SIGKILLed by macOS the moment it actually runs, with nothing
-# written anywhere to explain why - caught a real user hitting exactly this
-# after clearing quarantine on only the two .app files, not the whole
-# folder. Catch it here with an actionable message instead of a dead
-# browser tab and no clue what happened.
+# written anywhere to explain why.
 if ! "$PHP_BIN" -v >/dev/null 2>&1; then
     fail "macOS is blocking BMC's bundled PHP program from running (this is separate from the app icons themselves).\n\nOpen Terminal, then run:\ncd \"$DIR\"\nxattr -cr .\n\nThen try Start BMC again."
 fi
@@ -81,12 +103,7 @@ open "http://localhost:8000"
 # Critical: do NOT let this script exit here. macOS treats "Start BMC.app"
 # quitting (its top-level process exiting) as the app having quit, and
 # cleans up its whole process group - nohup only ignores SIGHUP, it does
-# NOT fully detach from that group, so the server/reverb children were
-# getting silently killed within seconds of launch even though they were
-# spawned correctly (caught via a real user's browser never connecting,
-# then reproduced and traced directly: process alive at spawn, gone 3s
-# later). macOS has no `setsid` command to properly detach instead, so the
-# fix is to just keep this script alive for as long as BMC should be
-# running - Stop BMC.app killing these two PIDs is what ends this wait and
-# lets this process exit naturally.
+# NOT fully detach from that group. Keep this script alive for as long as
+# BMC should be running; Stop BMC.app killing these two PIDs is what ends
+# this wait and lets this process exit naturally.
 wait "$SERVER_PID" "$REVERB_PID"

@@ -9,7 +9,8 @@ STATE_DIR="$DIR/state"
 PID_FILE="$STATE_DIR/pids.txt"
 
 notify() {
-    osascript -e "display dialog \"$1\" with title \"BMC\" buttons {\"OK\"} default button 1 with icon note" >/dev/null 2>&1
+    local escaped="${1//\"/\\\"}"
+    osascript -e "display dialog \"$escaped\" with title \"BMC\" buttons {\"OK\"} default button 1 with icon note" >/dev/null 2>&1
 }
 
 stopped_any=false
